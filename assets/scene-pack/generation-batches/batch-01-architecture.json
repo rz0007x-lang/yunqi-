@@ -95,6 +95,6 @@
     "regenerated_assets": ["ARCH-004"],
     "must_pass_satisfied": true,
     "completed_at": "2026-11-14T22:04:48+08:00",
-    "next_gate": "normalize accepted GLBs, generate LODs, then integrate a first complete courtyard slice"
+    "next_gate": "generate production LODs, measure mobile performance, then create batch 02 connectors"
   }
 }

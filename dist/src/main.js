@@ -152,6 +152,11 @@ async function initialize() {
       progress.style.width = `${86 + ratio * 12}%`;
       bootCopy.textContent = ratio < 0.98 ? "正在展开 Lux3D 大殿……" : "正在点亮殿内灯火……";
     },
+    onCourtyardStatus: ({ state, loaded, total }) => {
+      if (state === "loading" && loaded === 0) showNotice("正在展开云庭的侧殿、回廊与石桥……", 5200);
+      if (state === "ready") showNotice("云庭已经展开。沿回廊可以走向竹林静坐亭。", 5200);
+      if (state === "partial") showNotice(`云庭已载入 ${loaded}/${total} 件资源，缺失部分暂用原场景补位。`, 5200);
+    },
     onSeatSelected: (seat) => {
       room.update({ seat });
       leaveSeat.hidden = false;

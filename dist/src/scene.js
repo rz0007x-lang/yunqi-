@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { loadCourtyardSlice } from "./courtyard.js";
 
 const TEMPLE_MODEL_URL = new URL("../assets/lux3d/main-hall-turbo/main-hall-turbo.glb", import.meta.url).href;
 const GATE_MODEL_URL = new URL("../assets/lux3d/temple-shell-turbo/temple-shell-turbo.glb", import.meta.url).href;
@@ -231,12 +232,13 @@ function createMonk({ color = palette.robe, self = false } = {}) {
 }
 
 export class TempleScene {
-  constructor({ canvas, labels, onSeatSelected, onSeatUnavailable, onAssetProgress }) {
+  constructor({ canvas, labels, onSeatSelected, onSeatUnavailable, onAssetProgress, onCourtyardStatus }) {
     this.canvas = canvas;
     this.labelsRoot = labels;
     this.onSeatSelected = onSeatSelected;
     this.onSeatUnavailable = onSeatUnavailable;
     this.onAssetProgress = onAssetProgress;
+    this.onCourtyardStatus = onCourtyardStatus;
     this.clock = new THREE.Clock();
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(palette.void);
@@ -266,6 +268,9 @@ export class TempleScene {
     this.cameraYaw = 0;
     this.view = "gate";
     this.ambientMotions = [];
+    this.courtyardSlice = new THREE.Group();
+    this.courtyardSlice.name = "lux3d-courtyard-slice";
+    this.scene.add(this.courtyardSlice);
 
     this.#buildLights();
     this.#buildWorld();
@@ -323,6 +328,17 @@ export class TempleScene {
     if (!["gate", "courtyard", "hall"].includes(view)) return;
     this.view = view;
     this.cameraYaw = 0;
+    if (view === "courtyard") this.#ensureCourtyardSlice();
+  }
+
+  #ensureCourtyardSlice() {
+    if (this.courtyardLoadPromise) return this.courtyardLoadPromise;
+    this.courtyardLoadPromise = loadCourtyardSlice({
+      parent: this.courtyardSlice,
+      renderer: this.renderer,
+      onStatus: this.onCourtyardStatus,
+    });
+    return this.courtyardLoadPromise;
   }
 
   leaveSeat() {
@@ -414,6 +430,15 @@ export class TempleScene {
       courtyard.add(slab);
     }
 
+    [10.8, 18.2].forEach((z, row) => {
+      for (let index = 0; index < 7; index += 1) {
+        const spur = box(0.86, 0.11, 1.75, pathMats[(index + row) % pathMats.length], [2.15 + index * 1.04, 0.065, z]);
+        spur.rotation.y = Math.sin((index + row) * 1.8) * 0.018;
+        courtyard.add(spur);
+      }
+      courtyard.add(box(3.9, 0.18, 1.65, material(0x46524b), [8.6, 0.09, z]));
+    });
+
     const waterMat = new THREE.MeshStandardMaterial({
       color: 0x164a43,
       emissive: 0x0b3932,
@@ -424,7 +449,7 @@ export class TempleScene {
       opacity: 0.72,
       side: THREE.DoubleSide,
     });
-    [-1, 1].forEach((side) => {
+    [1].forEach((side) => {
       const pond = new THREE.Mesh(new THREE.CircleGeometry(3.3, 48), waterMat.clone());
       pond.rotation.x = -Math.PI / 2;
       pond.scale.set(1.65, 1, 0.72);
@@ -442,7 +467,7 @@ export class TempleScene {
       courtyard.add(rim);
     });
 
-    [[-10.5, 10.5, 1.1], [10.6, 11.3, 1.05], [-9.2, 20.8, 1.3], [9.4, 21.6, 1.22], [-7.6, 28, 0.95], [7.8, 28.4, 1.02]].forEach(([x, z, scale]) => {
+    [[-10.5, 10.5, 1.1], [13.2, 11.5, 1.05], [-9.2, 20.8, 1.3], [13.2, 20.5, 1.22], [-7.6, 28, 0.95], [13, 26.8, 1.02]].forEach(([x, z, scale]) => {
       const bamboo = createBambooCluster(scale);
       bamboo.position.set(x, 0, z);
       bamboo.rotation.y = x * 0.17;
@@ -769,6 +794,7 @@ export class TempleScene {
       if (!this.pointerDown) return;
       const delta = event.clientX - this.pointerDown.x;
       if (this.view === "hall" && Math.abs(delta) > 4) this.cameraYaw = THREE.MathUtils.clamp(this.pointerDown.yaw + delta * 0.003, -0.5, 0.5);
+      if (this.view === "courtyard" && Math.abs(delta) > 4) this.cameraYaw = THREE.MathUtils.clamp(this.pointerDown.yaw + delta * 0.003, -0.72, 0.72);
     });
     this.canvas.addEventListener("pointerup", (event) => {
       if (!this.pointerDown) return;
@@ -794,8 +820,14 @@ export class TempleScene {
       desiredPosition.set(0, mobile ? 10.2 : 9.4, mobile ? 46.5 : 45.5);
       desiredTarget.set(0, 2.8, 25.1);
     } else if (this.view === "courtyard") {
-      desiredPosition.set(mobile ? 13.6 : 15.2, mobile ? 8.2 : 8.7, mobile ? 22.5 : 20.5);
-      desiredTarget.set(0, 2.2, 5.5);
+      const courtyardDistance = mobile ? 26.8 : 28.8;
+      const courtyardAngle = (mobile ? 0.87 : 0.95) + this.cameraYaw;
+      desiredTarget.set(-3.2, 2.35, 13.2);
+      desiredPosition.set(
+        desiredTarget.x + Math.sin(courtyardAngle) * courtyardDistance,
+        mobile ? 9.6 : 10.6,
+        desiredTarget.z + Math.cos(courtyardAngle) * courtyardDistance,
+      );
     } else {
       const baseDistance = mobile ? 19.8 : 18.4;
       const angle = this.cameraYaw + 0.1;
