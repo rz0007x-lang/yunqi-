@@ -45,6 +45,18 @@ function showNotice(message, duration = 3200) {
   noticeTimer = window.setTimeout(() => notice.classList.remove("is-visible"), duration);
 }
 
+function setSceneView(view, announce = true) {
+  scene?.setView(view);
+  $$('[data-scene-view]').forEach((button) => button.classList.toggle("is-active", button.dataset.sceneView === view));
+  if (!announce) return;
+  const messages = {
+    gate: "山门之外，先把来处轻轻放下。",
+    courtyard: "沿着灯火穿过云庭，水声与竹影都在这里。",
+    hall: "大殿已开。点击发光的空坐垫选择位置。",
+  };
+  showNotice(messages[view], 4200);
+}
+
 function networkAction(action) {
   scene.perform(action, room.profile.id);
   room.update({ action, actionNonce: Date.now() });
@@ -151,6 +163,7 @@ async function initialize() {
   });
 
   await scene.ready;
+  setSceneView("gate", false);
 
   room = new PresenceRoom(profile);
   room.subscribe(({ self, peers }) => {
@@ -174,8 +187,10 @@ $("#enter-button").addEventListener("click", async () => {
   soundToggle.setAttribute("aria-pressed", String(audio.enabled));
   window.setTimeout(() => arrival.remove(), 520);
   audio.ringBell(true);
-  showNotice("点击发光的空坐垫，选择你的位置。", 5000);
+  setSceneView("courtyard");
 });
+
+$$('[data-scene-view]').forEach((button) => button.addEventListener("click", () => setSceneView(button.dataset.sceneView)));
 
 soundToggle.addEventListener("click", async () => {
   const enabled = await audio.toggle();

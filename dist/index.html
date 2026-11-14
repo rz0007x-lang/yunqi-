@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#07120f" />
     <meta name="description" content="云栖电子禅堂——一个不必说话，也能与陌生人安静共处的线上空间。" />
     <title>云栖 · 电子禅堂</title>
-    <link rel="stylesheet" href="/src/style.css?v=lux3d-hall" />
+    <link rel="stylesheet" href="/src/style.css?v=scenes-3" />
     <script type="importmap">
       {
         "imports": {
@@ -30,7 +30,7 @@
       </section>
 
       <section id="experience" class="experience" hidden>
-        <canvas id="world" aria-label="云栖电子禅堂三维场景，使用 Lux3D 大殿模型"></canvas>
+        <canvas id="world" aria-label="云栖电子禅堂三维场景，包含山门、云庭与 Lux3D 大殿"></canvas>
         <div id="labels" class="labels" aria-hidden="true"></div>
         <div class="vignette"></div>
 
@@ -54,10 +54,16 @@
         </aside>
 
         <aside class="guide glass">
-          <span>点击空坐垫入座</span>
+          <span>切换场景漫游</span>
           <i></i>
-          <span>拖动画面环顾大殿</span>
+          <span>进入大殿后选座</span>
         </aside>
+
+        <nav class="scene-nav glass" aria-label="场景导航">
+          <button class="is-active" data-scene-view="gate" type="button"><span>01</span>山门</button>
+          <button data-scene-view="courtyard" type="button"><span>02</span>云庭</button>
+          <button data-scene-view="hall" type="button"><span>03</span>大殿</button>
+        </nav>
 
         <div id="notice" class="notice" role="status">山门已开。这里没有聊天，只有陪伴。</div>
 
@@ -97,12 +103,12 @@
 
         <section id="arrival" class="arrival glass">
           <p>欢迎来到云栖</p>
-          <h2>这里不必开口</h2>
-          <p>你会以匿名小行者的身份，与其他人共享同一座电子禅堂。寻找一个空坐垫，安静坐一会儿。</p>
+          <h2>从山门开始</h2>
+          <p>循着石径穿过云庭，再进入大殿找一枚坐垫。这里不必开口，只需要慢一点。</p>
           <button id="enter-button" class="primary-button" type="button">沿光进入</button>
         </section>
       </section>
     </main>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/main.js?v=scenes-3"></script>
   </body>
 </html>

@@ -8,6 +8,7 @@ const dist = resolve(root, "dist");
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(resolve(dist, "src"), { recursive: true });
 mkdirSync(resolve(dist, "assets/lux3d/main-hall-turbo"), { recursive: true });
+mkdirSync(resolve(dist, "assets/lux3d/temple-shell-turbo"), { recursive: true });
 
 cpSync(resolve(root, "index.html"), resolve(dist, "index.html"));
 cpSync(resolve(root, "src"), resolve(dist, "src"), { recursive: true });
@@ -15,5 +16,9 @@ cpSync(
   resolve(root, "assets/lux3d/main-hall-turbo/main-hall-turbo.glb"),
   resolve(dist, "assets/lux3d/main-hall-turbo/main-hall-turbo.glb"),
 );
+cpSync(
+  resolve(root, "assets/lux3d/temple-shell-turbo/temple-shell-turbo.glb"),
+  resolve(dist, "assets/lux3d/temple-shell-turbo/temple-shell-turbo.glb"),
+);
 
-console.log("Built static Site with the Lux3D hall asset.");
+console.log("Built static Site with Lux3D hall and mountain-gate assets.");

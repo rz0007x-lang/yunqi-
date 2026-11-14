@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const TEMPLE_MODEL_URL = new URL("../assets/lux3d/main-hall-turbo/main-hall-turbo.glb", import.meta.url).href;
+const GATE_MODEL_URL = new URL("../assets/lux3d/temple-shell-turbo/temple-shell-turbo.glb", import.meta.url).href;
 
 const TAU = Math.PI * 2;
 const SEAT_ROWS = 5;
@@ -56,17 +57,50 @@ function addEdges(mesh, color = palette.jade, opacity = 0.18) {
 
 function createMountainRing() {
   const group = new THREE.Group();
-  const mountainMat = material(0x0d2a22, { flatShading: true, roughness: 1 });
-  for (let index = 0; index < 38; index += 1) {
-    const angle = (index / 38) * TAU;
-    const radius = 24 + Math.sin(index * 2.7) * 4;
-    const height = 5 + Math.random() * 10;
-    const geometry = new THREE.ConeGeometry(3.4 + Math.random() * 2.4, height, 5);
-    const peak = new THREE.Mesh(geometry, mountainMat);
-    peak.position.set(Math.cos(angle) * radius, height / 2 - 1.5, Math.sin(angle) * radius - 2);
-    peak.rotation.y = Math.random() * TAU;
-    group.add(peak);
+  const mountainMats = [
+    material(0x0c281f, { flatShading: true, roughness: 1 }),
+    material(0x12352a, { flatShading: true, roughness: 1 }),
+    material(0x183f33, { flatShading: true, roughness: 1 }),
+  ];
+  for (let layer = 0; layer < 3; layer += 1) {
+    const count = 25 + layer * 7;
+    for (let index = 0; index < count; index += 1) {
+      const angle = (index / count) * TAU + layer * 0.13;
+      const radius = 50 + layer * 10 + Math.sin(index * 2.37 + layer) * 5;
+      const height = 7 + layer * 3 + (Math.sin(index * 1.71) + 1) * 4;
+      const geometry = new THREE.ConeGeometry(3.8 + layer * 1.4 + (index % 4) * 0.35, height, 6);
+      const peak = new THREE.Mesh(geometry, mountainMats[layer]);
+      peak.position.set(Math.cos(angle) * radius, height / 2 - 1.8, Math.sin(angle) * radius);
+      peak.rotation.y = angle + index * 0.31;
+      group.add(peak);
+    }
   }
+  return group;
+}
+
+function createBambooCluster(scale = 1) {
+  const group = new THREE.Group();
+  const stalkMat = material(0x315f45, { roughness: 0.9 });
+  const jointMat = material(0x172f25, { roughness: 1 });
+  const leafMat = material(0x244f3b, { roughness: 1, side: THREE.DoubleSide });
+  const leafGeometry = new THREE.ConeGeometry(0.12, 0.72, 5);
+
+  for (let index = 0; index < 7; index += 1) {
+    const height = 3.7 + (index % 4) * 0.55;
+    const x = Math.sin(index * 2.1) * 0.62;
+    const z = Math.cos(index * 1.7) * 0.55;
+    group.add(cylinder(0.045, height, stalkMat, [x, height / 2, z], 8));
+    for (let joint = 1; joint < 5; joint += 1) {
+      group.add(cylinder(0.06, 0.045, jointMat, [x, (height / 5) * joint, z], 8));
+    }
+    for (let leaf = 0; leaf < 5; leaf += 1) {
+      const blade = new THREE.Mesh(leafGeometry, leafMat);
+      blade.position.set(x + Math.sin(leaf * 1.9) * 0.3, height * (0.54 + leaf * 0.08), z + Math.cos(leaf * 2.3) * 0.28);
+      blade.rotation.set(Math.PI / 2.2, leaf * 1.25, 0.35);
+      group.add(blade);
+    }
+  }
+  group.scale.setScalar(scale);
   return group;
 }
 
@@ -207,9 +241,11 @@ export class TempleScene {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(palette.void);
     this.scene.fog = new THREE.FogExp2(palette.fog, 0.033);
-    this.camera = new THREE.PerspectiveCamera(48, 1, 0.1, 120);
-    this.camera.position.set(11.8, 8.5, 16.5);
-    this.cameraTarget = new THREE.Vector3(0, 1, -1.4);
+    this.camera = new THREE.PerspectiveCamera(48, 1, 0.1, 160);
+    this.camera.position.set(0, 8.2, 39);
+    this.cameraTarget = new THREE.Vector3(0, 2.7, 25);
+    this.desiredCameraPosition = new THREE.Vector3();
+    this.desiredCameraTarget = new THREE.Vector3();
     this.camera.lookAt(this.cameraTarget);
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", alpha: false });
@@ -228,6 +264,8 @@ export class TempleScene {
     this.botIds = [];
     this.pointerDown = null;
     this.cameraYaw = 0;
+    this.view = "gate";
+    this.ambientMotions = [];
 
     this.#buildLights();
     this.#buildWorld();
@@ -279,6 +317,12 @@ export class TempleScene {
   perform(action, actorId) {
     const monk = this.characters.get(actorId) ?? this.self;
     monk?.userData.perform(action);
+  }
+
+  setView(view) {
+    if (!["gate", "courtyard", "hall"].includes(view)) return;
+    this.view = view;
+    this.cameraYaw = 0;
   }
 
   leaveSeat() {
@@ -335,7 +379,7 @@ export class TempleScene {
 
   #buildWorld() {
     const ground = new THREE.Mesh(
-      new THREE.CircleGeometry(48, 64),
+      new THREE.CircleGeometry(82, 96),
       material(0x081a15, { roughness: 1 }),
     );
     ground.rotation.x = -Math.PI / 2;
@@ -357,6 +401,85 @@ export class TempleScene {
       new THREE.PointsMaterial({ color: palette.jade, size: 0.045, transparent: true, opacity: 0.55 }),
     );
     this.scene.add(stars);
+
+    const courtyard = new THREE.Group();
+    courtyard.name = "cloud-courtyard";
+    this.scene.add(courtyard);
+
+    const pathMats = [material(0x3f4b44), material(0x4a554e), material(0x35423b)];
+    for (let index = 0; index < 24; index += 1) {
+      const z = 9.8 + index * 1.05;
+      const slab = box(3.4 + (index % 3) * 0.22, 0.12, 0.78, pathMats[index % pathMats.length], [Math.sin(index * 1.7) * 0.12, 0.07, z]);
+      slab.rotation.y = Math.sin(index * 2.3) * 0.025;
+      courtyard.add(slab);
+    }
+
+    const waterMat = new THREE.MeshStandardMaterial({
+      color: 0x164a43,
+      emissive: 0x0b3932,
+      emissiveIntensity: 0.7,
+      roughness: 0.18,
+      metalness: 0.42,
+      transparent: true,
+      opacity: 0.72,
+      side: THREE.DoubleSide,
+    });
+    [-1, 1].forEach((side) => {
+      const pond = new THREE.Mesh(new THREE.CircleGeometry(3.3, 48), waterMat.clone());
+      pond.rotation.x = -Math.PI / 2;
+      pond.scale.set(1.65, 1, 0.72);
+      pond.position.set(side * 8.6, 0.055, 14.5);
+      courtyard.add(pond);
+      this.ambientMotions.push({ object: pond, kind: "water", phase: side });
+
+      const rim = new THREE.Mesh(
+        new THREE.TorusGeometry(3.3, 0.12, 6, 48),
+        material(0x2f3c36, { roughness: 1 }),
+      );
+      rim.rotation.x = Math.PI / 2;
+      rim.scale.set(1.65, 0.72, 1);
+      rim.position.copy(pond.position);
+      courtyard.add(rim);
+    });
+
+    [[-10.5, 10.5, 1.1], [10.6, 11.3, 1.05], [-9.2, 20.8, 1.3], [9.4, 21.6, 1.22], [-7.6, 28, 0.95], [7.8, 28.4, 1.02]].forEach(([x, z, scale]) => {
+      const bamboo = createBambooCluster(scale);
+      bamboo.position.set(x, 0, z);
+      bamboo.rotation.y = x * 0.17;
+      courtyard.add(bamboo);
+    });
+
+    [11.4, 15.8, 20.2, 24.6, 29].forEach((z, index) => {
+      [-1, 1].forEach((side) => {
+        const post = cylinder(0.08, 1.8, material(0x2a1b14), [side * 3.25, 0.9, z], 8);
+        courtyard.add(post);
+        const lantern = createLantern(index % 2 ? palette.jade : palette.gold);
+        lantern.scale.setScalar(0.82);
+        lantern.position.set(side * 3.25, 1.92, z);
+        courtyard.add(lantern);
+      });
+    });
+
+    const fireflyPositions = [];
+    for (let index = 0; index < 120; index += 1) {
+      fireflyPositions.push((Math.random() - 0.5) * 22, 0.7 + Math.random() * 4.8, 8 + Math.random() * 24);
+    }
+    const fireflyGeometry = new THREE.BufferGeometry();
+    fireflyGeometry.setAttribute("position", new THREE.Float32BufferAttribute(fireflyPositions, 3));
+    const fireflies = new THREE.Points(
+      fireflyGeometry,
+      new THREE.PointsMaterial({ color: 0xb9ffe5, size: 0.075, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending, depthWrite: false }),
+    );
+    courtyard.add(fireflies);
+    this.ambientMotions.push({ object: fireflies, kind: "fireflies", phase: 0 });
+
+    const gateFallback = new THREE.Group();
+    gateFallback.name = "gate-fallback";
+    gateFallback.add(box(10.8, 0.45, 5.4, material(0x28352f), [0, 0.18, 25.2]));
+    [-4.2, 4.2].forEach((x) => gateFallback.add(cylinder(0.27, 5.2, material(0x3a241a), [x, 2.8, 25.2], 14)));
+    gateFallback.add(box(10.5, 0.42, 0.6, material(0x1d342c), [0, 5.25, 25.2]));
+    this.scene.add(gateFallback);
+    this.gateFallback = gateFallback;
   }
 
   #buildTemple() {
@@ -451,7 +574,7 @@ export class TempleScene {
       });
     });
 
-    return new Promise((resolve) => {
+    const hallPromise = new Promise((resolve) => {
       const loader = new GLTFLoader();
       loader.load(
         TEMPLE_MODEL_URL,
@@ -480,19 +603,64 @@ export class TempleScene {
           this.scene.add(model);
           this.templeModel = model;
           fallback.visible = false;
+          this.onAssetProgress?.(0.78);
+          resolve({ source: "lux3d", dimensions: rawSize.multiplyScalar(scale) });
+        },
+        (event) => {
+          if (event.total > 0) this.onAssetProgress?.(Math.min(0.76, (event.loaded / event.total) * 0.76));
+        },
+        (error) => {
+          console.warn("Lux3D temple model could not be loaded; using procedural fallback.", error);
+          this.onAssetProgress?.(0.78);
+          resolve({ source: "fallback" });
+        },
+      );
+    });
+
+    const gatePromise = new Promise((resolve) => {
+      const loader = new GLTFLoader();
+      loader.load(
+        GATE_MODEL_URL,
+        (gltf) => {
+          const model = gltf.scene;
+          const rawBounds = new THREE.Box3().setFromObject(model);
+          const rawSize = rawBounds.getSize(new THREE.Vector3());
+          const rawCenter = rawBounds.getCenter(new THREE.Vector3());
+          const scale = 10.4 / rawSize.x;
+
+          model.scale.setScalar(scale);
+          model.position.set(-rawCenter.x * scale, 0.24 - rawBounds.min.y * scale, 25.2 - rawCenter.z * scale);
+          model.name = "lux3d-mountain-gate";
+          model.traverse((child) => {
+            if (!child.isMesh) return;
+            child.castShadow = true;
+            child.receiveShadow = true;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.filter(Boolean).forEach((meshMaterial) => {
+              meshMaterial.envMapIntensity = 0.7;
+              if (meshMaterial.map) meshMaterial.map.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+              meshMaterial.needsUpdate = true;
+            });
+          });
+
+          this.scene.add(model);
+          this.gateModel = model;
+          this.gateFallback.visible = false;
           this.onAssetProgress?.(1);
           resolve({ source: "lux3d", dimensions: rawSize.multiplyScalar(scale) });
         },
         (event) => {
-          if (event.total > 0) this.onAssetProgress?.(Math.min(0.99, event.loaded / event.total));
+          if (event.total > 0) this.onAssetProgress?.(0.78 + Math.min(0.21, (event.loaded / event.total) * 0.21));
         },
         (error) => {
-          console.warn("Lux3D temple model could not be loaded; using procedural fallback.", error);
+          console.warn("Lux3D mountain gate could not be loaded; using procedural fallback.", error);
           this.onAssetProgress?.(1);
           resolve({ source: "fallback" });
         },
       );
     });
+
+    return Promise.all([hallPromise, gatePromise]);
   }
 
   #buildSeats() {
@@ -600,13 +768,14 @@ export class TempleScene {
     this.canvas.addEventListener("pointermove", (event) => {
       if (!this.pointerDown) return;
       const delta = event.clientX - this.pointerDown.x;
-      if (Math.abs(delta) > 4) this.cameraYaw = THREE.MathUtils.clamp(this.pointerDown.yaw + delta * 0.003, -0.5, 0.5);
+      if (this.view === "hall" && Math.abs(delta) > 4) this.cameraYaw = THREE.MathUtils.clamp(this.pointerDown.yaw + delta * 0.003, -0.5, 0.5);
     });
     this.canvas.addEventListener("pointerup", (event) => {
       if (!this.pointerDown) return;
       const distance = Math.hypot(event.clientX - this.pointerDown.x, event.clientY - this.pointerDown.y);
       this.pointerDown = null;
       if (distance > 7) return;
+      if (this.view !== "hall") return;
       const rect = this.canvas.getBoundingClientRect();
       this.pointer.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
       this.raycaster.setFromCamera(this.pointer, this.camera);
@@ -618,12 +787,24 @@ export class TempleScene {
 
   #updateCamera(time) {
     const mobile = window.innerWidth < 720;
-    const baseDistance = mobile ? 19.8 : 18.4;
-    const angle = this.cameraYaw + 0.1;
-    this.camera.position.x = Math.sin(angle) * baseDistance;
-    this.camera.position.z = Math.cos(angle) * baseDistance + 0.2;
-    this.camera.position.y = mobile ? 8.6 : 7.8;
-    this.cameraTarget.set(0, mobile ? 1.35 : 1.55, -1.6);
+    const desiredPosition = this.desiredCameraPosition;
+    const desiredTarget = this.desiredCameraTarget;
+
+    if (this.view === "gate") {
+      desiredPosition.set(0, mobile ? 10.2 : 9.4, mobile ? 46.5 : 45.5);
+      desiredTarget.set(0, 2.8, 25.1);
+    } else if (this.view === "courtyard") {
+      desiredPosition.set(mobile ? 13.6 : 15.2, mobile ? 8.2 : 8.7, mobile ? 22.5 : 20.5);
+      desiredTarget.set(0, 2.2, 5.5);
+    } else {
+      const baseDistance = mobile ? 19.8 : 18.4;
+      const angle = this.cameraYaw + 0.1;
+      desiredPosition.set(Math.sin(angle) * baseDistance, mobile ? 8.6 : 7.8, Math.cos(angle) * baseDistance + 0.2);
+      desiredTarget.set(0, mobile ? 1.35 : 1.55, -1.6);
+    }
+
+    this.camera.position.lerp(desiredPosition, 0.065);
+    this.cameraTarget.lerp(desiredTarget, 0.065);
     this.camera.lookAt(this.cameraTarget);
     this.camera.position.y += Math.sin(time * 0.18) * 0.08;
   }
@@ -634,7 +815,7 @@ export class TempleScene {
     const vector = new THREE.Vector3();
     for (const [id, label] of this.labels) {
       const monk = this.characters.get(id);
-      if (!monk?.visible) { label.hidden = true; continue; }
+      if (this.view !== "hall" || !monk?.visible) { label.hidden = true; continue; }
       vector.setFromMatrixPosition(monk.matrixWorld);
       vector.y += monk.userData.seated ? 1.45 : 1.72;
       vector.project(this.camera);
@@ -652,6 +833,15 @@ export class TempleScene {
     this.#updateCamera(time);
     this.core.rotation.y = time * 0.18;
     this.core.children.forEach((child, index) => { child.rotation.x = time * (0.07 + index * 0.025); });
+
+    this.ambientMotions.forEach(({ object, kind, phase }) => {
+      if (kind === "water") {
+        object.material.emissiveIntensity = 0.58 + Math.sin(time * 0.8 + phase) * 0.12;
+      } else if (kind === "fireflies") {
+        object.rotation.y = Math.sin(time * 0.07) * 0.08;
+        object.material.opacity = 0.58 + Math.sin(time * 1.25) * 0.14;
+      }
+    });
 
     for (const [id, monk] of this.characters) {
       monk.userData.update?.(time);

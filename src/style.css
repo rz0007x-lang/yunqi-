@@ -91,6 +91,13 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 .guide { position: fixed; z-index: 8; top: 102px; right: max(18px, env(safe-area-inset-right)); display: flex; align-items: center; gap: 8px; padding: 10px 13px; border-radius: 15px; color: rgba(230,238,232,.5); font-family: system-ui, sans-serif; font-size: 9px; }
 .guide i { width: 3px; height: 3px; border-radius: 50%; background: var(--jade); }
 
+.scene-nav { position: fixed; z-index: 11; top: 102px; left: 50%; display: flex; gap: 3px; padding: 4px; border-radius: 999px; transform: translateX(-50%); }
+.scene-nav button { min-width: 72px; height: 34px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 999px; color: rgba(231,239,233,.5); background: transparent; cursor: pointer; font-size: 10px; transition: color .25s, background .25s, box-shadow .25s; }
+.scene-nav button span { color: rgba(115,230,189,.42); font: 8px/1 ui-monospace, monospace; }
+.scene-nav button:hover, .scene-nav button:focus-visible { color: #e6f5ed; outline: none; background: rgba(255,255,255,.045); }
+.scene-nav button.is-active { color: #e6f5ed; background: rgba(115,230,189,.12); box-shadow: inset 0 0 0 1px rgba(115,230,189,.16); }
+.scene-nav button.is-active span { color: var(--jade); }
+
 .notice { position: fixed; z-index: 30; top: 178px; left: 50%; max-width: calc(100% - 36px); padding: 10px 15px; border: 1px solid rgba(115,230,189,.17); border-radius: 999px; color: rgba(232,241,235,.84); background: rgba(4, 16, 12, .78); backdrop-filter: blur(16px); font-family: system-ui, sans-serif; font-size: 11px; text-align: center; opacity: 0; transform: translate(-50%, -8px); transition: opacity .3s, transform .3s; pointer-events: none; }
 .notice.is-visible { opacity: 1; transform: translate(-50%, 0); }
 
@@ -135,9 +142,11 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
   .brand small { display: none; }
   .brand b { font-size: 15px; }
   .presence { transform: translateX(-4px); }
-  .identity { top: 79px; left: 10px; }
+  .identity { top: 121px; left: 10px; }
   .guide { display: none; }
-  .notice { top: 136px; }
+  .scene-nav { top: 78px; }
+  .scene-nav button { min-width: 62px; height: 31px; font-size: 9px; }
+  .notice { top: 168px; }
   .ritual-dock { bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100% - 20px); justify-content: space-between; gap: 0; padding: 5px; border-radius: 19px; }
   .ritual-dock button { width: 19%; height: 57px; padding: 0; border-radius: 14px; }
   .ritual-dock span { width: 23px; height: 23px; }
