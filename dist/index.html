@@ -6,7 +6,15 @@
     <meta name="theme-color" content="#07120f" />
     <meta name="description" content="云栖电子禅堂——一个不必说话，也能与陌生人安静共处的线上空间。" />
     <title>云栖 · 电子禅堂</title>
-    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/style.css?v=lux3d-hall" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/"
+        }
+      }
+    </script>
   </head>
   <body>
     <main id="app">
@@ -22,7 +30,7 @@
       </section>
 
       <section id="experience" class="experience" hidden>
-        <canvas id="world" aria-label="云栖电子禅堂三维场景"></canvas>
+        <canvas id="world" aria-label="云栖电子禅堂三维场景，使用 Lux3D 大殿模型"></canvas>
         <div id="labels" class="labels" aria-hidden="true"></div>
         <div class="vignette"></div>
 

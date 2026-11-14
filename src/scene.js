@@ -1,4 +1,7 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js";
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+const TEMPLE_MODEL_URL = new URL("../assets/lux3d/main-hall-turbo/main-hall-turbo.glb", import.meta.url).href;
 
 const TAU = Math.PI * 2;
 const SEAT_ROWS = 5;
@@ -194,11 +197,12 @@ function createMonk({ color = palette.robe, self = false } = {}) {
 }
 
 export class TempleScene {
-  constructor({ canvas, labels, onSeatSelected, onSeatUnavailable }) {
+  constructor({ canvas, labels, onSeatSelected, onSeatUnavailable, onAssetProgress }) {
     this.canvas = canvas;
     this.labelsRoot = labels;
     this.onSeatSelected = onSeatSelected;
     this.onSeatUnavailable = onSeatUnavailable;
+    this.onAssetProgress = onAssetProgress;
     this.clock = new THREE.Clock();
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(palette.void);
@@ -227,7 +231,7 @@ export class TempleScene {
 
     this.#buildLights();
     this.#buildWorld();
-    this.#buildTemple();
+    this.ready = this.#buildTemple();
     this.#buildSeats();
     this.#seedBots();
     this.#bindEvents();
@@ -302,7 +306,7 @@ export class TempleScene {
   }
 
   #buildLights() {
-    this.scene.add(new THREE.HemisphereLight(0x99d7c2, 0x07100d, 1.35));
+    this.scene.add(new THREE.HemisphereLight(0x99d7c2, 0x07100d, 1.7));
     const moon = new THREE.DirectionalLight(0xb8fff0, 2.7);
     moon.position.set(-8, 16, 11);
     moon.castShadow = true;
@@ -315,8 +319,18 @@ export class TempleScene {
     this.scene.add(moon);
 
     const altarGlow = new THREE.PointLight(palette.jade, 12, 18, 2);
-    altarGlow.position.set(0, 4, -9.5);
+    altarGlow.position.set(0, 4, -7.2);
     this.scene.add(altarGlow);
+
+    const warmKey = new THREE.DirectionalLight(0xffcf91, 1.85);
+    warmKey.position.set(7, 11, 9);
+    this.scene.add(warmKey);
+
+    [[-4.8, 3.3, -2.2], [4.8, 3.3, -2.2], [-4.8, 3.1, 4.3], [4.8, 3.1, 4.3]].forEach((position) => {
+      const glow = new THREE.PointLight(0xffb86b, 4.8, 9, 2);
+      glow.position.set(...position);
+      this.scene.add(glow);
+    });
   }
 
   #buildWorld() {
@@ -352,6 +366,11 @@ export class TempleScene {
     const darkWood = material(0x241610);
     const roof = material(0x18342c, { metalness: 0.18, roughness: 0.7, transparent: true, opacity: 0.46, depthWrite: false });
 
+    const fallback = new THREE.Group();
+    fallback.name = "procedural-temple-fallback";
+    this.templeFallback = fallback;
+    this.scene.add(fallback);
+
     const foundation = box(14.8, 0.6, 19, stone, [0, 0.22, -0.8]);
     this.scene.add(foundation);
     addEdges(foundation, palette.jade, 0.08);
@@ -361,36 +380,36 @@ export class TempleScene {
     }
 
     const floor = box(13.8, 0.24, 17.6, material(0x18221d), [0, 0.62, -0.8]);
-    this.scene.add(floor);
+    fallback.add(floor);
 
     [-6.1, 6.1].forEach((x) => {
       [-8, -4, 0, 4, 8].forEach((z) => {
         const column = cylinder(0.23, 5.4, wood, [x, 3.3, z], 16);
-        this.scene.add(column);
-        this.scene.add(cylinder(0.34, 0.18, darkWood, [x, 0.68, z], 12));
-        this.scene.add(cylinder(0.36, 0.22, darkWood, [x, 5.98, z], 12));
+        fallback.add(column);
+        fallback.add(cylinder(0.34, 0.18, darkWood, [x, 0.68, z], 12));
+        fallback.add(cylinder(0.36, 0.22, darkWood, [x, 5.98, z], 12));
       });
     });
 
     [-8.2, -4.1, 0, 4.1, 8.2].forEach((z) => {
-      this.scene.add(box(13.1, 0.25, 0.25, darkWood, [0, 5.86, z]));
+      fallback.add(box(13.1, 0.25, 0.25, darkWood, [0, 5.86, z]));
     });
 
     const roofLower = box(16.4, 0.5, 20.5, roof, [0, 6.25, -0.8]);
     roofLower.rotation.z = 0.012;
-    this.scene.add(roofLower);
+    fallback.add(roofLower);
     addEdges(roofLower, palette.cyan, 0.13);
     const roofUpper = box(12.4, 0.38, 16.5, material(0x13231d, { transparent: true, opacity: 0.28, depthWrite: false }), [0, 6.67, -0.8]);
-    this.scene.add(roofUpper);
+    fallback.add(roofUpper);
 
     for (let index = 0; index < 9; index += 1) {
       const x = -5.2 + index * 1.3;
       const beam = box(0.11, 0.11, 18.6, material(0x285044, { emissive: 0x0b2c23, emissiveIntensity: 0.8 }), [x, 6.01, -0.8]);
-      this.scene.add(beam);
+      fallback.add(beam);
     }
 
     const altarWall = box(11, 4.1, 0.3, material(0x0d1b16), [0, 2.76, -9.1]);
-    this.scene.add(altarWall);
+    fallback.add(altarWall);
     const altarPlatform = box(5.4, 0.65, 2.1, stoneLight, [0, 0.95, -7.7]);
     this.scene.add(altarPlatform);
 
@@ -412,7 +431,7 @@ export class TempleScene {
       new THREE.MeshStandardMaterial({ color: 0xf5df9b, emissive: 0x9e6d25, emissiveIntensity: 2.6, metalness: 0.6, roughness: 0.25 }),
     );
     core.add(orb);
-    core.position.set(0, 3.1, -8.65);
+    core.position.set(0, 3.1, -7.15);
     core.userData.spin = true;
     this.scene.add(core);
     this.core = core;
@@ -420,7 +439,7 @@ export class TempleScene {
     for (let index = 0; index < 12; index += 1) {
       const angle = (index / 12) * TAU;
       const lantern = createLantern(index % 3 === 0 ? palette.jade : palette.gold);
-      lantern.position.set(Math.cos(angle) * 4.2, 2.2 + (index % 2) * 0.45, -8.3 + Math.sin(angle) * 1.1);
+      lantern.position.set(Math.cos(angle) * 4.2, 2.2 + (index % 2) * 0.45, -6.85 + Math.sin(angle) * 1.1);
       this.scene.add(lantern);
     }
 
@@ -430,6 +449,49 @@ export class TempleScene {
         lantern.position.set(x, 3.8, z);
         this.scene.add(lantern);
       });
+    });
+
+    return new Promise((resolve) => {
+      const loader = new GLTFLoader();
+      loader.load(
+        TEMPLE_MODEL_URL,
+        (gltf) => {
+          const model = gltf.scene;
+          const rawBounds = new THREE.Box3().setFromObject(model);
+          const rawSize = rawBounds.getSize(new THREE.Vector3());
+          const rawCenter = rawBounds.getCenter(new THREE.Vector3());
+          const scale = 15.8 / rawSize.x;
+
+          model.scale.setScalar(scale);
+          model.position.set(-rawCenter.x * scale, 0.56 - rawBounds.min.y * scale, -0.8 - rawCenter.z * scale);
+          model.name = "lux3d-main-hall";
+          model.traverse((child) => {
+            if (!child.isMesh) return;
+            child.castShadow = true;
+            child.receiveShadow = true;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.filter(Boolean).forEach((meshMaterial) => {
+              meshMaterial.envMapIntensity = 0.72;
+              if (meshMaterial.map) meshMaterial.map.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+              meshMaterial.needsUpdate = true;
+            });
+          });
+
+          this.scene.add(model);
+          this.templeModel = model;
+          fallback.visible = false;
+          this.onAssetProgress?.(1);
+          resolve({ source: "lux3d", dimensions: rawSize.multiplyScalar(scale) });
+        },
+        (event) => {
+          if (event.total > 0) this.onAssetProgress?.(Math.min(0.99, event.loaded / event.total));
+        },
+        (error) => {
+          console.warn("Lux3D temple model could not be loaded; using procedural fallback.", error);
+          this.onAssetProgress?.(1);
+          resolve({ source: "fallback" });
+        },
+      );
     });
   }
 
@@ -538,7 +600,7 @@ export class TempleScene {
     this.canvas.addEventListener("pointermove", (event) => {
       if (!this.pointerDown) return;
       const delta = event.clientX - this.pointerDown.x;
-      if (Math.abs(delta) > 4) this.cameraYaw = THREE.MathUtils.clamp(this.pointerDown.yaw + delta * 0.003, -0.42, 0.42);
+      if (Math.abs(delta) > 4) this.cameraYaw = THREE.MathUtils.clamp(this.pointerDown.yaw + delta * 0.003, -0.5, 0.5);
     });
     this.canvas.addEventListener("pointerup", (event) => {
       if (!this.pointerDown) return;
@@ -556,12 +618,12 @@ export class TempleScene {
 
   #updateCamera(time) {
     const mobile = window.innerWidth < 720;
-    const baseDistance = mobile ? 20.5 : 17.5;
-    const angle = this.cameraYaw + 0.58;
+    const baseDistance = mobile ? 19.8 : 18.4;
+    const angle = this.cameraYaw + 0.1;
     this.camera.position.x = Math.sin(angle) * baseDistance;
-    this.camera.position.z = Math.cos(angle) * baseDistance - 0.4;
-    this.camera.position.y = mobile ? 9.4 : 8.2;
-    this.cameraTarget.set(0, mobile ? 1.3 : 1.6, -1.2);
+    this.camera.position.z = Math.cos(angle) * baseDistance + 0.2;
+    this.camera.position.y = mobile ? 8.6 : 7.8;
+    this.cameraTarget.set(0, mobile ? 1.35 : 1.55, -1.6);
     this.camera.lookAt(this.cameraTarget);
     this.camera.position.y += Math.sin(time * 0.18) * 0.08;
   }

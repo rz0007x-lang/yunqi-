@@ -136,6 +136,10 @@ async function initialize() {
   scene = new TempleScene({
     canvas: $("#world"),
     labels: $("#labels"),
+    onAssetProgress: (ratio) => {
+      progress.style.width = `${86 + ratio * 12}%`;
+      bootCopy.textContent = ratio < 0.98 ? "正在展开 Lux3D 大殿……" : "正在点亮殿内灯火……";
+    },
     onSeatSelected: (seat) => {
       room.update({ seat });
       leaveSeat.hidden = false;
@@ -145,6 +149,8 @@ async function initialize() {
     },
     onSeatUnavailable: () => showNotice("这枚坐垫已有来客。旁边仍有空位。"),
   });
+
+  await scene.ready;
 
   room = new PresenceRoom(profile);
   room.subscribe(({ self, peers }) => {
