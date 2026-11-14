@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-environment-03",
+  "goal": "用可复用自然资产替换庭院主要程序化环境占位体",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "sequential-review-gate",
+  "tasks": [
+    {
+      "asset_id": "ENV-007",
+      "name": "水池边缘模块",
+      "face_target": 50000,
+      "prompt_section": "ENV-007 水池边缘模块",
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7655321,
+      "completed_at": "2026-11-15T02:12:02+08:00",
+      "review": "pass; isolated curved bank without water or terrain; normalize to 4 by 0.6 by 2 meters and overlap seams slightly"
+    },
+    {
+      "asset_id": "ENV-001",
+      "name": "近景岩壁",
+      "face_target": 80000,
+      "prompt_section": "ENV-001 近景岩壁",
+      "status": "accepted_with_normalization",
+      "attempts": [
+        {
+          "provider_task_id": 7658150,
+          "completed_at": "2026-11-15T02:21:21+08:00",
+          "status": "rejected",
+          "review": "front formed a large cave or arch opening; violates the solid near-field rock-wall requirement"
+        },
+        {
+          "provider_task_id": 7661284,
+          "completed_at": "2026-11-15T02:36:35+08:00",
+          "status": "accepted",
+          "review": "solid continuous front without cave opening; large scale normalization required"
+        }
+      ]
+    },
+    {
+      "asset_id": "ENV-003",
+      "name": "高竹组合",
+      "face_target": 70000,
+      "prompt_section": "ENV-003 高竹组合",
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7665695,
+      "completed_at": "2026-11-15T02:45:02+08:00",
+      "review": "pass; complete rooted bamboo cluster with dense upper foliage; sink the small irregular soil base below the terrain and normalize to 3 by 7 by 3 meters"
+    },
+    {
+      "asset_id": "ENV-006",
+      "name": "迎风松树",
+      "face_target": 100000,
+      "prompt_section": "ENV-006 迎风松树",
+      "status": "accepted_with_runtime_tint",
+      "attempts": [
+        {
+          "provider_task_id": 7668578,
+          "completed_at": "2026-11-15T03:00:15+08:00",
+          "status": "rejected",
+          "review": "excellent complete windswept silhouette, but nearly all needle clusters rendered white or silver and break the humid muted-green palette"
+        },
+        {
+          "provider_task_id": 7672552,
+          "completed_at": "2026-11-15T03:12:09+08:00",
+          "status": "accepted",
+          "review": "complete roots and strong windswept silhouette; foliage recovered muted green information but remains pale, so apply a restrained olive material multiplier at runtime"
+        }
+      ]
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "complete silhouette and clean bottom contact",
+      "no surrounding terrain slab or accidental diorama",
+      "scale can be normalized without breaking natural proportions",
+      "materials match the humid muted mountain-temple palette",
+      "module seams or plant trunks remain complete as specified"
+    ],
+    "on_fail": "revise only the failed environment prompt and regenerate before advancing"
+  },
+  "result": "accepted",
+  "completed_at": "2026-11-15T03:12:09+08:00"
+}

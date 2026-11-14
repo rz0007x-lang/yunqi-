@@ -2,6 +2,7 @@ export class TempleAudio {
   constructor() {
     this.enabled = false;
     this.voices = [];
+    this.zone = "gate";
   }
 
   async toggle(force) {
@@ -55,7 +56,9 @@ export class TempleAudio {
       oscillator.frequency.value = frequency;
       gain.gain.setValueAtTime((soft ? 0.035 : 0.075) / (index + 1), now);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 4.2 + index);
-      oscillator.connect(gain).connect(this.master);
+      oscillator.connect(gain);
+      gain.connect(this.master);
+      gain.connect(this.reverb);
       oscillator.start(now);
       oscillator.stop(now + 5.5 + index);
     });
@@ -75,12 +78,41 @@ export class TempleAudio {
     oscillator.stop(now + 0.1);
   }
 
+  setZone(zone) {
+    if (!["gate", "courtyard", "hall"].includes(zone)) return;
+    this.zone = zone;
+    if (!this.context) return;
+    const now = this.context.currentTime;
+    const levels = {
+      gate: { wind: 0.04, water: 0.006, hall: 0.012 },
+      courtyard: { wind: 0.024, water: 0.04, hall: 0.018 },
+      hall: { wind: 0.006, water: 0.004, hall: 0.055 },
+    }[zone];
+    [[this.windGain, levels.wind], [this.waterGain, levels.water], [this.hallGain, levels.hall]].forEach(([gain, value]) => {
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setTargetAtTime(value, now, 1.4);
+    });
+  }
+
   #createContext() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     this.context = new AudioContext();
     this.master = this.context.createGain();
     this.master.gain.value = 0.0001;
     this.master.connect(this.context.destination);
+
+    this.reverb = this.context.createConvolver();
+    const impulse = this.context.createBuffer(2, this.context.sampleRate * 2.4, this.context.sampleRate);
+    for (let channel = 0; channel < impulse.numberOfChannels; channel += 1) {
+      const samples = impulse.getChannelData(channel);
+      for (let index = 0; index < samples.length; index += 1) {
+        samples[index] = (Math.random() * 2 - 1) * ((1 - index / samples.length) ** 2.6);
+      }
+    }
+    this.reverb.buffer = impulse;
+    const reverbGain = this.context.createGain();
+    reverbGain.gain.value = 0.12;
+    this.reverb.connect(reverbGain).connect(this.master);
 
     const drone = this.context.createOscillator();
     const droneTwo = this.context.createOscillator();
@@ -93,11 +125,13 @@ export class TempleAudio {
     drone.detune.value = -4;
     droneTwo.detune.value = 5;
     droneGain.gain.value = 0.11;
+    this.hallGain = this.context.createGain();
+    this.hallGain.gain.value = 0.012;
     lowpass.type = "lowpass";
     lowpass.frequency.value = 220;
     drone.connect(droneGain);
     droneTwo.connect(droneGain);
-    droneGain.connect(lowpass).connect(this.master);
+    droneGain.connect(lowpass).connect(this.hallGain).connect(this.master);
     drone.start();
     droneTwo.start();
 
@@ -106,14 +140,27 @@ export class TempleAudio {
     for (let index = 0; index < data.length; index += 1) data[index] = Math.random() * 2 - 1;
     const noise = this.context.createBufferSource();
     const noiseFilter = this.context.createBiquadFilter();
-    const noiseGain = this.context.createGain();
+    this.windGain = this.context.createGain();
     noise.buffer = buffer;
     noise.loop = true;
     noiseFilter.type = "bandpass";
     noiseFilter.frequency.value = 620;
     noiseFilter.Q.value = 0.35;
-    noiseGain.gain.value = 0.018;
-    noise.connect(noiseFilter).connect(noiseGain).connect(this.master);
+    this.windGain.gain.value = 0.04;
+    noise.connect(noiseFilter).connect(this.windGain).connect(this.master);
     noise.start();
+
+    const waterNoise = this.context.createBufferSource();
+    const waterFilter = this.context.createBiquadFilter();
+    this.waterGain = this.context.createGain();
+    waterNoise.buffer = buffer;
+    waterNoise.loop = true;
+    waterFilter.type = "lowpass";
+    waterFilter.frequency.value = 1050;
+    waterFilter.Q.value = 0.65;
+    this.waterGain.gain.value = 0.006;
+    waterNoise.connect(waterFilter).connect(this.waterGain).connect(this.master);
+    waterNoise.start();
+    this.setZone(this.zone);
   }
 }

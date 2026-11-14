@@ -1,6 +1,6 @@
-import { TempleScene } from "./scene.js";
-import { TempleAudio } from "./audio.js";
-import { PresenceRoom } from "./presence.js";
+import { TempleScene } from "./scene.js?v=pre-multiplayer-7";
+import { TempleAudio } from "./audio.js?v=pre-multiplayer-7";
+import { PresenceRoom } from "./presence.js?v=pre-multiplayer-7";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -47,6 +47,7 @@ function showNotice(message, duration = 3200) {
 
 function setSceneView(view, announce = true) {
   scene?.setView(view);
+  audio.setZone(view);
   $$('[data-scene-view]').forEach((button) => button.classList.toggle("is-active", button.dataset.sceneView === view));
   if (!announce) return;
   const messages = {
@@ -166,6 +167,8 @@ async function initialize() {
     },
     onSeatUnavailable: () => showNotice("这枚坐垫已有来客。旁边仍有空位。"),
   });
+  window.__YUNQI_DIAGNOSTICS__ = () => scene.getDiagnostics();
+  document.documentElement.dataset.yunqiDiagnostics = JSON.stringify(scene.getDiagnostics());
 
   await scene.ready;
   setSceneView("gate", false);

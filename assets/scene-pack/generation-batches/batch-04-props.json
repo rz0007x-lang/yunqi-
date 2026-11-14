@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-props-04",
+  "goal": "补齐云庭、侧院与大殿的可交互寺院道具",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "sequential-review-gate",
+  "tasks": [
+    {"asset_id":"PROP-001","name":"石灯","face_target":45000,"prompt_section":"PROP-001 石灯","status":"accepted_with_normalization","provider_task_id":7676914,"review":"complete hollow lamp chamber, stable foot and clean silhouette"},
+    {"asset_id":"PROP-002","name":"木制引路灯","face_target":45000,"prompt_section":"PROP-002 木制引路灯","status":"accepted_with_normalization","provider_task_id":7678170,"review":"complete slender post, stable stone shoe and readable roofed lantern box"},
+    {"asset_id":"PROP-003","name":"香炉","face_target":42000,"prompt_section":"PROP-003 香炉","status":"accepted_with_minor_deviation","provider_task_id":7680870,"review":"complete bronze basin and ash tray; three loose incense sticks appeared despite the prompt but no smoke or fire"},
+    {"asset_id":"PROP-004","name":"寺院钟","face_target":50000,"prompt_section":"PROP-004 寺院钟","status":"accepted_static","provider_task_id":7684190,"review":"complete bell frame and striker; one merged mesh, accepted as static environmental prop for this phase"},
+    {"asset_id":"PROP-005","name":"仪式鼓","face_target":48000,"prompt_section":"PROP-005 仪式鼓","status":"accepted_static_with_orientation_deviation","provider_task_id":7685835,"review":"complete vertical ritual drum and stable timber stand; prompt requested horizontal orientation, accepted for the east ritual court"},
+    {"asset_id":"PROP-006","name":"供桌","face_target":36000,"prompt_section":"PROP-006 供桌","status":"accepted_with_normalization","provider_task_id":7689773,"review":"clean empty top, four stable legs and restrained timber apron"},
+    {"asset_id":"PROP-007","name":"原创石碑","face_target":34000,"prompt_section":"PROP-007 原创石碑","status":"accepted_with_normalization","provider_task_id":7691629,"review":"front remains blank and flat with a restrained recessed border; no pseudo text"},
+    {"asset_id":"PROP-008","name":"蓄水陶缸","face_target":30000,"prompt_section":"PROP-008 蓄水陶缸","status":"accepted_with_normalization","provider_task_id":7695039,"review":"complete open rim and dark interior, restrained blue-green glaze runs, no duplicate or terrain"},
+    {"asset_id":"PROP-009","name":"木制区域牌","face_target":36000,"prompt_section":"PROP-009 木制区域牌","status":"accepted_with_normalization","provider_task_id":7700483,"review":"blank unobstructed sign face, stable stone shoes and clean tiled rain cap"},
+    {"asset_id":"PROP-010","name":"禅修坐垫","face_target":28000,"prompt_section":"PROP-010 禅修坐垫","status":"accepted_with_normalization","attempts":[{"provider_task_id":7701799,"status":"failed","review":"provider ended with status 4 before producing outputs"},{"provider_task_id":7702610,"status":"accepted","review":"clean rectangular woven cushion with central depression and no symbols"}]}
+  ],
+  "review_gate": {
+    "checks": [
+      "complete isolated silhouette and stable bottom contact",
+      "realistic dimensions relative to a 1.7 meter person",
+      "no surrounding terrain, duplicate object, statue or accidental text",
+      "movable bell, drum and ritual body remain visually separable",
+      "blank runtime-text surfaces remain unobstructed"
+    ],
+    "on_fail": "revise only the failed prop prompt and regenerate before advancing"
+  },
+  "result": "accepted",
+  "completed_at": "2026-11-15T04:56:32+08:00"
+}

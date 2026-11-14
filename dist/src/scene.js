@@ -1,9 +1,11 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { loadCourtyardSlice } from "./courtyard.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import { loadCourtyardSlice } from "./courtyard.js?v=pre-multiplayer-7";
 
 const TEMPLE_MODEL_URL = new URL("../assets/lux3d/main-hall-turbo/main-hall-turbo.glb", import.meta.url).href;
 const GATE_MODEL_URL = new URL("../assets/lux3d/temple-shell-turbo/temple-shell-turbo.glb", import.meta.url).href;
+const CUSHION_MODEL_URL = new URL("../assets/scene-pack/runtime/lod2/PROP-010/PROP-010.glb", import.meta.url).href;
 
 const TAU = Math.PI * 2;
 const SEAT_ROWS = 5;
@@ -221,6 +223,11 @@ function createMonk({ color = palette.robe, self = false } = {}) {
       arms[1].rotation.z = 0.82;
       arms[0].position.x = -0.2;
       arms[1].position.x = 0.2;
+    } else if (root.userData.walking) {
+      const stride = Math.sin(time * 7.2);
+      body.rotation.z = stride * 0.035;
+      arms[0].rotation.x = stride * 0.34;
+      arms[1].rotation.x = -stride * 0.34;
     }
 
     if (action && elapsed > (ACTION_LENGTH[action] ?? 2.2)) {
@@ -268,8 +275,17 @@ export class TempleScene {
     this.botIds = [];
     this.pointerDown = null;
     this.cameraYaw = 0;
+    this.lastFrameTime = 0;
+    this.lastRenderAt = performance.now();
+    this.frameTimes = [];
+    this.frameCounter = 0;
+    this.qualityAdjustments = 0;
     this.view = "gate";
     this.ambientMotions = [];
+    this.seatVisuals = [];
+    this.hallDetails = new THREE.Group();
+    this.hallDetails.name = "hall-only-details";
+    this.scene.add(this.hallDetails);
     this.courtyardSlice = new THREE.Group();
     this.courtyardSlice.name = "lux3d-courtyard-slice";
     this.scene.add(this.courtyardSlice);
@@ -291,6 +307,7 @@ export class TempleScene {
       monk.rotation.y = Math.PI;
       this.scene.add(monk);
       this.self = monk;
+      monk.visible = true;
       this.characters.set(profile.id, monk);
       this.#createLabel(profile.id, profile.name, true);
     }
@@ -307,6 +324,7 @@ export class TempleScene {
         monk.position.set((Math.random() - 0.5) * 3, 0.04, 8.2 + Math.random());
         monk.rotation.y = Math.PI;
         this.scene.add(monk);
+        monk.visible = this.view === "hall";
         this.characters.set(peer.id, monk);
         this.#createLabel(peer.id, peer.name, false);
       }
@@ -330,7 +348,25 @@ export class TempleScene {
     if (!["gate", "courtyard", "hall"].includes(view)) return;
     this.view = view;
     this.cameraYaw = 0;
+    this.renderer.shadowMap.enabled = view === "hall";
     if (view === "courtyard") this.#ensureCourtyardSlice();
+    this.#applyViewVisibility();
+    for (const monk of this.characters.values()) {
+      monk.visible = monk === this.self || view === "hall";
+      monk.traverse((child) => {
+        if (child.isMesh) child.castShadow = view === "hall";
+      });
+    }
+    if (this.self && this.self.userData.targetSeat == null) {
+      const destination = {
+        gate: [0, 0.04, 26.4],
+        courtyard: [0, 0.04, 14.6],
+        hall: [0, 0.04, 8.6],
+      }[view];
+      this.self.userData.walkTarget = new THREE.Vector3(...destination);
+      this.self.userData.walking = true;
+      this.self.userData.setSeated(false);
+    }
   }
 
   #ensureCourtyardSlice() {
@@ -339,8 +375,26 @@ export class TempleScene {
       parent: this.courtyardSlice,
       renderer: this.renderer,
       onStatus: this.onCourtyardStatus,
+    }).then((result) => {
+      this.#applyViewVisibility();
+      return result;
     });
     return this.courtyardLoadPromise;
+  }
+
+  #applyViewVisibility() {
+    const inHall = this.view === "hall";
+    const hallAssetGroups = new Set([
+      "prop-003-instances",
+      "prop-004-instances",
+      "prop-005-instances",
+      "prop-006-instances",
+    ]);
+    this.hallDetails.visible = inHall;
+    this.seatVisuals.forEach((visual) => { visual.visible = inHall; });
+    for (const child of this.courtyardSlice.children) {
+      child.visible = inHall ? hallAssetGroups.has(child.name) : !hallAssetGroups.has(child.name);
+    }
   }
 
   leaveSeat() {
@@ -368,12 +422,31 @@ export class TempleScene {
     this.resizeObserver?.disconnect();
   }
 
+  getDiagnostics() {
+    const samples = [...this.frameTimes].sort((a, b) => a - b);
+    const averageFrameMs = samples.length ? samples.reduce((sum, value) => sum + value, 0) / samples.length : 0;
+    return {
+      view: this.view,
+      samples: samples.length,
+      averageFrameMs: Number(averageFrameMs.toFixed(2)),
+      estimatedFps: averageFrameMs ? Number((1000 / averageFrameMs).toFixed(1)) : 0,
+      p95FrameMs: samples.length ? Number(samples[Math.floor((samples.length - 1) * 0.95)].toFixed(2)) : 0,
+      pixelRatio: Number(this.renderer.getPixelRatio().toFixed(2)),
+      qualityAdjustments: this.qualityAdjustments,
+      drawCalls: this.renderer.info.render.calls,
+      triangles: this.renderer.info.render.triangles,
+      geometries: this.renderer.info.memory.geometries,
+      textures: this.renderer.info.memory.textures,
+      courtyardAssets: this.courtyardSlice.children.length,
+    };
+  }
+
   #buildLights() {
     this.scene.add(new THREE.HemisphereLight(0x99d7c2, 0x07100d, 1.7));
     const moon = new THREE.DirectionalLight(0xb8fff0, 2.7);
     moon.position.set(-8, 16, 11);
     moon.castShadow = true;
-    moon.shadow.mapSize.set(2048, 2048);
+    moon.shadow.mapSize.set(1024, 1024);
     moon.shadow.camera.left = -18;
     moon.shadow.camera.right = 18;
     moon.shadow.camera.top = 18;
@@ -442,14 +515,18 @@ export class TempleScene {
       courtyard.add(box(3.9, 0.18, 1.65, material(0x46524b), [8.6, 0.09, z]));
     });
 
-    const waterMat = new THREE.MeshStandardMaterial({
+    const waterMat = new THREE.MeshPhysicalMaterial({
       color: 0x164a43,
       emissive: 0x0b3932,
-      emissiveIntensity: 0.7,
-      roughness: 0.18,
-      metalness: 0.42,
+      emissiveIntensity: 0.58,
+      roughness: 0.16,
+      metalness: 0.18,
+      clearcoat: 1,
+      clearcoatRoughness: 0.12,
+      transmission: 0.08,
+      thickness: 0.35,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.78,
       side: THREE.DoubleSide,
     });
     [1].forEach((side) => {
@@ -470,14 +547,14 @@ export class TempleScene {
       courtyard.add(rim);
     });
 
-    [[-10.5, 10.5, 1.1], [13.2, 11.5, 1.05], [-9.2, 20.8, 1.3], [13.2, 20.5, 1.22], [-7.6, 28, 0.95], [13, 26.8, 1.02]].forEach(([x, z, scale]) => {
+    [[-7.6, 28, 0.95], [13, 26.8, 1.02]].forEach(([x, z, scale]) => {
       const bamboo = createBambooCluster(scale);
       bamboo.position.set(x, 0, z);
       bamboo.rotation.y = x * 0.17;
       courtyard.add(bamboo);
     });
 
-    [11.4, 15.8, 20.2, 24.6, 29].forEach((z, index) => {
+    [15.8, 29].forEach((z, index) => {
       [-1, 1].forEach((side) => {
         const post = cylinder(0.08, 1.8, material(0x2a1b14), [side * 3.25, 0.9, z], 8);
         courtyard.add(post);
@@ -562,7 +639,7 @@ export class TempleScene {
     const altarWall = box(11, 4.1, 0.3, material(0x0d1b16), [0, 2.76, -9.1]);
     fallback.add(altarWall);
     const altarPlatform = box(5.4, 0.65, 2.1, stoneLight, [0, 0.95, -7.7]);
-    this.scene.add(altarPlatform);
+    this.hallDetails.add(altarPlatform);
 
     const core = new THREE.Group();
     const torusMaterial = new THREE.MeshStandardMaterial({
@@ -584,21 +661,21 @@ export class TempleScene {
     core.add(orb);
     core.position.set(0, 3.1, -7.15);
     core.userData.spin = true;
-    this.scene.add(core);
+    this.hallDetails.add(core);
     this.core = core;
 
     for (let index = 0; index < 12; index += 1) {
       const angle = (index / 12) * TAU;
       const lantern = createLantern(index % 3 === 0 ? palette.jade : palette.gold);
       lantern.position.set(Math.cos(angle) * 4.2, 2.2 + (index % 2) * 0.45, -6.85 + Math.sin(angle) * 1.1);
-      this.scene.add(lantern);
+      this.hallDetails.add(lantern);
     }
 
     [-5.3, 5.3].forEach((x) => {
       [-6, -2, 2, 6].forEach((z, index) => {
         const lantern = createLantern(index % 2 ? palette.jade : palette.gold);
         lantern.position.set(x, 3.8, z);
-        this.scene.add(lantern);
+        this.hallDetails.add(lantern);
       });
     });
 
@@ -692,7 +769,7 @@ export class TempleScene {
   }
 
   #buildSeats() {
-    const seatMaterial = material(0x425b4f, { roughness: 1 });
+    const seatMaterial = material(0x425b4f, { roughness: 1, transparent: true, opacity: 0.025, depthWrite: false });
     for (let row = 0; row < SEAT_ROWS; row += 1) {
       for (let col = 0; col < SEAT_COLS; col += 1) {
         const index = row * SEAT_COLS + col;
@@ -700,14 +777,49 @@ export class TempleScene {
         const seat = new THREE.Mesh(geometry, seatMaterial.clone());
         seat.position.set((col - (SEAT_COLS - 1) / 2) * 1.52, 0.83, 5.4 - row * 2.0);
         seat.scale.z = 0.78;
-        seat.castShadow = true;
+        seat.castShadow = false;
         seat.receiveShadow = true;
+        seat.layers.set(1);
         seat.userData.seatIndex = index;
         seat.userData.occupiedBy = null;
         this.seats.push(seat);
         this.scene.add(seat);
       }
     }
+    this.#loadSeatVisuals();
+  }
+
+  #loadSeatVisuals() {
+    const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+    loader.load(CUSHION_MODEL_URL, (gltf) => {
+      this.seats.forEach((seat, index) => {
+        const model = gltf.scene.clone(true);
+        model.name = `lux3d-cushion-${index + 1}`;
+        model.scale.set(1.5, 0.843, 1.503);
+        model.traverse((child) => {
+          if (!child.isMesh) return;
+          child.castShadow = false;
+          child.receiveShadow = true;
+          child.material = child.material.clone();
+          child.material.envMapIntensity = 0.68;
+        });
+        model.updateMatrixWorld(true);
+        const bounds = new THREE.Box3().setFromObject(model);
+        const center = bounds.getCenter(new THREE.Vector3());
+        model.position.x += seat.position.x - center.x;
+        model.position.y += (seat.position.y - 0.065) - bounds.min.y;
+        model.position.z += seat.position.z - center.z;
+        model.updateMatrixWorld(true);
+        seat.userData.visual = model;
+        model.visible = this.view === "hall";
+        this.seatVisuals.push(model);
+        this.scene.add(model);
+      });
+      this.#refreshSeats();
+    }, undefined, (error) => {
+      console.warn("Lux3D cushion model could not be loaded; keeping low-poly seat proxies.", error);
+      this.seats.forEach((seat) => { seat.material.opacity = 1; });
+    });
   }
 
   #seedBots() {
@@ -722,6 +834,7 @@ export class TempleScene {
       monk.userData.baseY = monk.position.y;
       monk.userData.setSeated(true);
       monk.userData.profile = { id, name: names[index], seat: seatIndex };
+      monk.visible = this.view === "hall";
       if (index % 5 === 0) monk.userData.perform("gassho");
       seat.userData.occupiedBy = id;
       this.scene.add(monk);
@@ -767,6 +880,11 @@ export class TempleScene {
       const occupied = Boolean(botOccupant || dynamicOccupant);
       seat.material.emissive.setHex(occupied ? 0x07100d : 0x123d31);
       seat.material.emissiveIntensity = occupied ? 0.15 : 0.42;
+      seat.userData.visual?.traverse((child) => {
+        if (!child.isMesh) return;
+        child.material.emissive?.setHex(occupied ? 0x050806 : 0x102f26);
+        child.material.emissiveIntensity = occupied ? 0.08 : 0.34;
+      });
     });
   }
 
@@ -808,6 +926,7 @@ export class TempleScene {
       const rect = this.canvas.getBoundingClientRect();
       this.pointer.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
       this.raycaster.setFromCamera(this.pointer, this.camera);
+      this.raycaster.layers.set(1);
       const hit = this.raycaster.intersectObjects(this.seats, false)[0];
       if (hit) this.#selectSeat(hit.object.userData.seatIndex);
     });
@@ -862,10 +981,43 @@ export class TempleScene {
     }
   }
 
+  #updateMovement(time) {
+    const delta = Math.min(0.05, Math.max(0, time - this.lastFrameTime));
+    this.lastFrameTime = time;
+    const monk = this.self;
+    const target = monk?.userData.walkTarget;
+    if (!monk || !target || monk.userData.targetSeat != null) return;
+    const offset = target.clone().sub(monk.position);
+    offset.y = 0;
+    const distance = offset.length();
+    if (distance < 0.04) {
+      monk.position.x = target.x;
+      monk.position.z = target.z;
+      monk.userData.baseY = target.y;
+      monk.userData.walkTarget = null;
+      monk.userData.walking = false;
+      return;
+    }
+    const direction = offset.normalize();
+    const step = Math.min(distance, delta * 2.25);
+    monk.position.addScaledVector(direction, step);
+    monk.userData.baseY = target.y;
+    monk.rotation.y = Math.atan2(direction.x, direction.z);
+  }
+
   animate = () => {
     this.frame = requestAnimationFrame(this.animate);
+    this.frameCounter += 1;
+    const renderedAt = performance.now();
+    const frameMs = renderedAt - this.lastRenderAt;
+    this.lastRenderAt = renderedAt;
+    if (frameMs < 250) {
+      this.frameTimes.push(frameMs);
+      if (this.frameTimes.length > 180) this.frameTimes.shift();
+    }
     const time = this.clock.getElapsedTime();
     this.#updateCamera(time);
+    this.#updateMovement(time);
     this.core.rotation.y = time * 0.18;
     this.core.children.forEach((child, index) => { child.rotation.x = time * (0.07 + index * 0.025); });
 
@@ -878,6 +1030,15 @@ export class TempleScene {
       }
     });
 
+    const bambooGroup = this.courtyardSlice.getObjectByName("env-003-instances");
+    bambooGroup?.children.forEach((bamboo, index) => {
+      bamboo.rotation.z = Math.sin(time * 0.42 + index * 1.7) * 0.006;
+    });
+    const pineGroup = this.courtyardSlice.getObjectByName("env-006-instances");
+    pineGroup?.children.forEach((pine, index) => {
+      pine.rotation.z = Math.sin(time * 0.27 + index * 2.1) * 0.0025;
+    });
+
     for (const [id, monk] of this.characters) {
       monk.userData.update?.(time);
       if (id.startsWith("bot-") && Math.floor(time + Number(id.slice(4)) * 7) % 31 === 0 && !monk.userData.action) {
@@ -888,5 +1049,15 @@ export class TempleScene {
     this.scene.updateMatrixWorld();
     this.#updateLabels();
     this.renderer.render(this.scene, this.camera);
+
+    if (this.frameTimes.length >= 30 && this.frameCounter % 30 === 0) {
+      document.documentElement.dataset.yunqiDiagnostics = JSON.stringify(this.getDiagnostics());
+      const average = this.frameTimes.reduce((sum, value) => sum + value, 0) / this.frameTimes.length;
+      if (average > 28 && this.renderer.getPixelRatio() > 1) {
+        this.pixelRatioCap = Math.max(1, this.renderer.getPixelRatio() - 0.2);
+        this.qualityAdjustments += 1;
+        this.resize();
+      }
+    }
   };
 }

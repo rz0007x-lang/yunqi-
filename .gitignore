@@ -6,4 +6,10 @@ assets/lux3d/**/*.zip
 assets/lux3d/**/preview.html
 assets/scene-pack/source/**/*.zip
 assets/scene-pack/source/**/rejected-attempt-*/
+# Generated high-poly sources and intermediate LOD1 files stay local. The deployable
+# LOD2 assets, prompts, manifests and review records remain versioned.
+assets/scene-pack/source/ENV-*/
+assets/scene-pack/source/PROP-*/
+assets/scene-pack/runtime/lod1/ENV-*/
+assets/scene-pack/runtime/lod1/PROP-*/
 dist/assets/scene-pack/

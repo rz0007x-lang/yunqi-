@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -6,16 +6,26 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const assetId = process.argv[2];
 const shouldWait = process.argv.includes("--wait");
 const dryRun = process.argv.includes("--dry-run");
+const resumeIndex = process.argv.indexOf("--task-id");
+const resumeTaskId = resumeIndex >= 0 ? Number(process.argv[resumeIndex + 1]) : null;
 const apiKey = process.env.LUX3D_API_KEY;
 
 if (!assetId) throw new Error("Usage: node scripts/lux3d-generate.mjs ARCH-005 [--wait]");
 if (!apiKey && !dryRun) throw new Error("LUX3D_API_KEY is required");
 
-const batchPath = resolve(root, "assets/scene-pack/generation-batches/batch-02-connectors.json");
+const batchDirectory = resolve(root, "assets/scene-pack/generation-batches");
 const promptPath = resolve(root, "assets/scene-pack/prompts/lux3d-prompt-library.md");
-const batch = JSON.parse(readFileSync(batchPath, "utf8"));
-const task = batch.tasks.find((item) => item.asset_id === assetId);
-if (!task) throw new Error(`Unknown batch-02 asset: ${assetId}`);
+let batch;
+let task;
+for (const fileName of readdirSync(batchDirectory).filter((name) => /^batch-.*\.json$/.test(name)).sort()) {
+  const candidate = JSON.parse(readFileSync(resolve(batchDirectory, fileName), "utf8"));
+  const matchedTask = candidate.tasks?.find((item) => item.asset_id === assetId && item.prompt_section);
+  if (!matchedTask) continue;
+  batch = candidate;
+  task = matchedTask;
+  break;
+}
+if (!batch || !task) throw new Error(`Unknown generated asset: ${assetId}`);
 
 const promptLibrary = readFileSync(promptPath, "utf8");
 const extractBlock = (heading) => {
@@ -33,6 +43,8 @@ const extractBlock = (heading) => {
 
 const prompt = extractBlock(task.prompt_section)
   .replace("{{COMMON_PREFIX}}", extractBlock("通用前缀"))
+  .replace("{{ENV_PREFIX}}", extractBlock("自然环境前缀"))
+  .replace("{{PROP_PREFIX}}", extractBlock("道具前缀"))
   .replace("{{COMMON_SUFFIX}}", extractBlock("通用后缀"));
 
 if (dryRun) {
@@ -56,7 +68,7 @@ const request = async (path, options = {}) => {
   return payload.d;
 };
 
-const taskId = await request("/lux3d/v1/generate/text-to-3d/task/create", {
+const taskId = resumeTaskId || await request("/lux3d/v1/generate/text-to-3d/task/create", {
   method: "POST",
   body: JSON.stringify({
     prompt,
@@ -69,7 +81,7 @@ const taskId = await request("/lux3d/v1/generate/text-to-3d/task/create", {
   }),
 });
 
-console.log(JSON.stringify({ assetId, taskId, status: "submitted" }));
+console.log(JSON.stringify({ assetId, taskId, status: resumeTaskId ? "resumed" : "submitted" }));
 if (!shouldWait) process.exit(0);
 
 let result;

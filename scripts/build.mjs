@@ -22,15 +22,29 @@ cpSync(
 );
 
 const runtimeAssets = [
-  ["lod1", "ARCH-003"],
-  ["lod1", "ARCH-004"],
-  ["lod1", "ARCH-005"],
+  ["lod2", "ARCH-003"],
+  ["lod2", "ARCH-004"],
+  ["lod2", "ARCH-005"],
   ["lod2", "ARCH-006"],
-  ["lod1", "ARCH-007"],
-  ["lod1", "ARCH-008"],
-  ["lod1", "ARCH-009"],
-  ["lod1", "ARCH-010"],
-  ["lod1", "ARCH-011"],
+  ["lod2", "ARCH-007"],
+  ["lod2", "ARCH-008"],
+  ["lod2", "ARCH-009"],
+  ["lod2", "ARCH-010"],
+  ["lod2", "ARCH-011"],
+  ["lod2", "ENV-001"],
+  ["lod2", "ENV-003"],
+  ["lod2", "ENV-007"],
+  ["lod2", "ENV-006"],
+  ["lod2", "PROP-001"],
+  ["lod2", "PROP-002"],
+  ["lod2", "PROP-003"],
+  ["lod2", "PROP-004"],
+  ["lod2", "PROP-005"],
+  ["lod2", "PROP-006"],
+  ["lod2", "PROP-007"],
+  ["lod2", "PROP-008"],
+  ["lod2", "PROP-009"],
+  ["lod2", "PROP-010"],
 ];
 
 for (const [lod, assetId] of runtimeAssets) {
@@ -40,4 +54,4 @@ for (const [lod, assetId] of runtimeAssets) {
   cpSync(resolve(sourceDirectory, `${assetId}.glb`), resolve(targetDirectory, `${assetId}.glb`));
 }
 
-console.log("Built static Site with compressed runtime LODs for the courtyard slice.");
+console.log("Built static Site with compressed runtime LODs for architecture, natural assets and temple props.");

@@ -95,12 +95,136 @@ A small pedestrian stone bridge approximately 4.5 meters wide and 7 meters long 
 - 同类资产至少生成两种轮廓，避免场景中明显复制。
 - 高松和竹林必须从底部完整生成，不能在树干中间截断。
 
+## 自然环境前缀
+
+```text
+Original natural environment asset for a quiet East Asian mountain-temple cyber-meditation world. Humid night atmosphere, warm-gray weathered rock, dark wet crevices, muted moss green and restrained natural color variation. Realistic human scale, physically plausible growth or erosion, high-quality PBR materials, production-ready game asset. The digital/cyber influence is nearly invisible and must not change the natural silhouette.
+```
+
+### ENV-007 水池边缘模块
+
+```text
+{{ENV_PREFIX}}
+A reusable slightly curved temple pond-bank module exactly 4 meters long along the X axis, 2 meters deep along the Z axis and no more than 0.6 meters high. The water-facing edge is positive Z and follows one smooth shallow concave curve; the dry courtyard side is negative Z and remains mostly straight. Build the bank from fitted warm-gray weathered stone slabs with a low natural rock lip, dark damp joints and subtle moss only close to the water line. BOTH X END CUTS MUST BE FLAT, VERTICAL, IDENTICAL AND COMPLETELY CLEAR so several copies can join end-to-end without gaps, caps, rocks or vegetation blocking the seam. The upper dry strip must remain walkable and nearly level. No water surface, no stream, no bridge, no railing, no lantern, no loose rock pile, no plants, no surrounding ground plane. This is one modular bank segment, not a complete pond or landscape diorama.
+{{COMMON_SUFFIX}}
+```
+
+### ENV-001 近景岩壁
+
+```text
+{{ENV_PREFIX}}
+A self-contained near-field mountain rock-wall formation approximately 12 meters wide, 6 meters deep and 9 meters tall. The primary visible cliff face looks toward positive Z and has a strong asymmetric silhouette with three large overlapping geological masses, layered fractured stone, narrow shadowed cracks and a stable broad base. THE ENTIRE FRONT MUST BE A CONTINUOUS SOLID OPAQUE ROCK SURFACE: absolutely no hole, cave, arch, tunnel, doorway, window, circular void, pass-through gap or large negative space anywhere. All major rock masses must overlap or fuse so they never outline an arch. Warm-gray metamorphic rock with darker damp hairline recesses, restrained moss in protected cracks and very small traces of lichen. The upper silhouette must be irregular but structurally believable, suitable for framing a temple courtyard camera at close range. The back may be simpler but must remain closed and stable. No waterfall, river, stairs, temple, shrine, statue, tree, bamboo, separate boulders, sky backdrop or surrounding terrain slab. One isolated solid rock-wall asset only.
+{{COMMON_SUFFIX}}
+```
+
+### ENV-003 高竹组合
+
+```text
+{{ENV_PREFIX}}
+A complete reusable cluster of tall mountain bamboo contained within a 3 by 3 meter footprint and approximately 7 meters tall. Include 11 to 15 individual bamboo culms emerging visibly from the bottom contact plane, with varied diameter, height and gentle lean. Use muted deep-green and olive culms with readable segmented joints, a few young shoots, and layered narrow leaves concentrated mainly in the upper two-thirds. The cluster must have an asymmetric natural silhouette with one open side so it can frame a walkway without becoming a solid wall. Every stalk must be continuous from its visible root base to its top; no stalk may be cut off mid-trunk. No planter, pot, fence, rock pedestal, soil mound, square ground card, temple object or complete forest. Avoid crossed random poles and avoid oversized broad leaves.
+{{COMMON_SUFFIX}}
+```
+
+### ENV-006 迎风松树
+
+```text
+{{ENV_PREFIX}}
+A complete old windswept mountain pine approximately 7 meters wide, 5 meters deep and 8 meters tall. One thick weathered trunk emerges visibly from the bottom contact plane, leans gently toward negative X, then divides into several twisting horizontal branches swept mostly toward positive X by prevailing wind. Layered sparse cloud-like needle clusters create a strong asymmetrical silhouette with intentional open negative space. The bark must remain dark warm brown with readable fissures. EVERY NEEDLE CLUSTER MUST BE CLEARLY DEEP NATURAL PINE GREEN OR MUTED OLIVE GREEN, with at least two green value levels and only very small cool highlights. Absolutely no white, silver, gray, ivory, crystal, snow-covered, frosted or untextured foliage; the crown must read unmistakably as healthy green pine needles under neutral light. Subtle moss only on the lower trunk. The entire trunk and root flare must be present; nothing may be cut off at the base or crown. No planter, pot, rock pedestal, soil mound, square ground card, shrine, lantern, hanging ornament, separate tree, forest backdrop or floating branches.
+{{COMMON_SUFFIX}}
+```
+
 ## 道具提示词规则
 
 - 道具使用真实人类尺度，不把小道具生成成建筑。
 - 灯具可以保留独立发光面，但不要把点光源烘焙成巨大发光球。
 - 牌匾和石碑不生成文字，文字由网页运行时叠加。
 - 钟、鼓和木鱼需要可独立旋转或动画的主体网格。
+
+## 道具前缀
+
+```text
+Original temple prop for a quiet East Asian mountain-temple cyber-meditation world. Traditional craft, realistic human scale, restrained weathering, humid night patina, high-quality PBR materials and a clear production-ready game silhouette. Match dark warm timber, warm-gray stone, aged bronze, muted cloth and tiny jade-green emissive accents only where explicitly requested. The object must read as an authentic functional temple furnishing rather than fantasy architecture or a souvenir.
+```
+
+### PROP-001 石灯
+
+```text
+{{PROP_PREFIX}}
+A complete freestanding Japanese-influenced mountain-temple stone lantern, 0.7 meters wide, 0.7 meters deep and 1.8 meters tall. Broad stable weathered stone foot, tapered shaft, small square lamp chamber with four open windows and a restrained pagoda-like stone cap. Warm-gray granite, darker damp joints and subtle moss near the foot. Keep the lamp chamber hollow and readable so a runtime light can be placed inside. No flame, glowing ball, pedestal terrain, shrine, plants, text or second lantern.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-002 木制引路灯
+
+```text
+{{PROP_PREFIX}}
+A slender freestanding wooden temple path lantern, 0.5 meters square and 2.1 meters tall. One dark timber post on a compact stone shoe supports a rectangular framed lantern box with translucent warm paper panels, shallow blue-green tiled cap and a tiny jade-green geometric inset below the box. The light panels may have very faint emissive material but no visible bulb or giant glow. Stable base, clean silhouette, no sign text, hanging cables, terrain, plants or second lantern.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-003 香炉
+
+```text
+{{PROP_PREFIX}}
+A complete ceremonial incense burner approximately 1.6 meters wide, 1.1 meters deep and 1.3 meters tall. A broad aged-bronze rectangular basin with two restrained side handles, low relief cloud motifs without text, four short sturdy legs and a separate shallow ash tray visible inside. Dark oxidized bronze with rubbed warm highlights and subtle green patina. No incense sticks, smoke, fire, offerings, altar, statue, terrain or duplicate object.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-004 寺院钟
+
+```text
+{{PROP_PREFIX}}
+A complete freestanding temple bell assembly approximately 1.8 meters wide, 1.8 meters deep and 2.2 meters tall. One large aged-bronze hanging bell with a thick readable rim and restrained horizontal bands, suspended from a compact dark timber A-frame crossbeam. The bell body must be a distinct centered mesh with clear space around it for animation. Dark bronze with subtle green patina, warm worn rim and blackened timber. No rope, striker log, pavilion, text, statue, terrain or second bell.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-005 仪式鼓
+
+```text
+{{PROP_PREFIX}}
+A complete freestanding ritual barrel drum approximately 1.6 meters wide, 1.2 meters deep and 1.8 meters tall. One horizontal dark red-brown wooden drum with taut muted parchment heads and a restrained ring of bronze studs, supported by a sculptural but stable dark timber cradle. The drum body must remain visually separate from the stand for animation. No drumsticks, people, text, painted dragon, pavilion, terrain or second drum.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-006 供桌
+
+```text
+{{PROP_PREFIX}}
+A low traditional temple offering table exactly 2.4 meters wide, 0.9 meters deep and 1.1 meters tall. Dark warm timber, thick rectangular top, four sturdy slightly tapered legs, simple recessed apron panels and restrained aged brass corner fittings. Empty top surface with enough clear area for runtime objects. No offerings, candles, incense, statue, text, cloth, surrounding floor or duplicate table.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-007 原创石碑
+
+```text
+{{PROP_PREFIX}}
+An original uninscribed courtyard stone stele approximately 1.2 meters wide, 0.5 meters deep and 2.4 meters tall. A single asymmetrical vertical warm-gray stone slab with a softly broken natural top, mounted in a compact rectangular stone socket base. The front must remain mostly flat and blank for runtime lettering, with only a thin recessed jade-green circuit-like border that never forms readable symbols. Damp streaks and subtle moss near the base. No carved characters, logos, statue, terrain, plants or second slab.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-008 蓄水陶缸
+
+```text
+{{PROP_PREFIX}}
+A complete large temple courtyard water jar approximately 1.1 meters in diameter and 1.2 meters tall. Broad rounded dark charcoal ceramic body, thick open rim, slightly narrowed foot, restrained hand-thrown irregularity and a few muted blue-green glaze runs. The interior opening must be visible and dark, suitable for a runtime water plane. No water overflow, ladle, pedestal, plants, text, terrain or second jar.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-009 木制区域牌
+
+```text
+{{PROP_PREFIX}}
+A freestanding wooden temple wayfinding sign approximately 1.6 meters wide, 0.3 meters deep and 1.8 meters tall. Two dark timber posts on small stone shoes support one horizontal framed wooden signboard. The signboard front must be completely blank, flat and unobstructed for runtime text, with a thin muted jade-green inset line around the edge. A shallow blue-green tiled rain cap protects the board. No letters, symbols, arrows, logo, lantern, terrain, plants or duplicate sign.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-010 禅修坐垫
+
+```text
+{{PROP_PREFIX}}
+A single low rectangular meditation cushion exactly 0.9 meters wide, 0.75 meters deep and 0.14 meters high. Dense muted rust-brown woven fabric, softly rounded corners, subtle central depression and restrained edge piping. Slight realistic compression while retaining a clean rectangular footprint. No person, floor mat, embroidery, symbols, text, tassels, glowing halo, terrain or second cushion.
+{{COMMON_SUFFIX}}
+```
 
 ## 验收时替换规则
 
