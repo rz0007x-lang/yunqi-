@@ -36,7 +36,31 @@ A repeatable, tunnel-like covered temple walkway module. Its length along the Z 
 
 ```text
 {{COMMON_PREFIX}}
-A ninety-degree modular covered temple corridor corner, fitting a 4 by 4 meter footprint and matching the straight corridor module. Continuous roof, aligned stone floor, consistent timber column spacing and railing height. Both connection ends must be open, centered and identical to the straight corridor cross-section.
+A ninety-degree L-shaped modular covered temple corridor corner, fitting exactly inside a 4 by 4 meter square footprint and matching the straight corridor module. One connection opening faces negative Z and the other faces positive X. BOTH CONNECTION END PLANES MUST BE COMPLETELY OPEN FROM STONE FLOOR TO RAFTERS, with no wall, panel, door, screen, railing or decorative obstruction crossing either opening. Each opening must be 2.6 meters wide, 3.4 meters tall, centered on its side, flat and geometrically identical to the straight corridor cross-section. Use one continuous right-angle stone walking floor, two parallel rows of dark timber columns following the L turn, low wooden railings only on the outer long edges, and one continuous muted blue-green tiled roof with a clean ninety-degree hip junction. A person must be able to enter from negative Z, turn left, and exit toward positive X without stepping or collision. This is a modular corridor connector, not a pavilion, room, gate or standalone shelter.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-007 围墙转角模块
+
+```text
+{{COMMON_PREFIX}}
+A precise ninety-degree L-shaped temple courtyard wall corner module, fitting exactly inside a 4 by 4 meter square footprint and matching the straight wall module. One wall arm extends toward negative Z and the other toward positive X; each arm is exactly 4 meters long, 0.45 meters deep and 2.6 meters tall, measured from the outside corner. Both exposed connection ends must be flat, vertical and geometrically identical to the straight wall cross-section so they join without gaps or overlap. Use a continuous warm-gray stone base, pale aged plaster middle, dark timber cap and muted blue-green tiled top with a clean mitered roof corner. Subtle moisture stains and moss only near the base. No gate, doorway, window, broken section, detached roof tile, foundation slab or surrounding ground. This is a repeatable wall connector, not a standalone decorative wall.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-008 侧门模块
+
+```text
+{{COMMON_PREFIX}}
+A compact secondary temple gate module, exactly 5 meters wide, 2 meters deep and 4.2 meters tall, designed to connect between courtyard wall modules. A centered rectangular walk-through opening at least 2.2 meters wide and 2.6 meters high must remain completely open from front to back, with no door leaf, screen, threshold obstacle or statue. Both left and right wall connection faces must be flat, vertical and match the straight wall cross-section at 2.6 meters tall. Use two dark timber posts, a restrained muted blue-green tiled gable roof, pale aged plaster side infill and a warm-gray stone base flush with the walking surface. Modest service entrance proportions, not a monumental main gate, pavilion or building. Front faces positive Z.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-011 石阶模块
+
+```text
+{{COMMON_PREFIX}}
+A modular exterior temple stair exactly 4 meters wide, 3 meters deep and 0.9 meters high. Five broad, evenly spaced warm-gray weathered stone steps rise along positive Z from ground level to a perfectly flat upper landing. The lowest and highest contact edges must be straight, horizontal and flush so the module can connect cleanly between terrain and a building foundation. Walking surface must remain broad and unobstructed for a third-person character. Subtle moss only in joints and side edges. No railings, balustrades, walls, gate, platform building, terrain mound, loose rocks or surrounding ground. This is a clean reusable stair connector, not a ceremonial monument.
 {{COMMON_SUFFIX}}
 ```
 

@@ -5,15 +5,21 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const gltfpack = process.env.GLTFPACK_BIN || "gltfpack";
+const requestedAssets = new Set(process.argv.slice(2));
 const profiles = {
   "ARCH-003": { lod1: [0.42, 0.015], lod2: [0.25, 0.04] },
   "ARCH-004": { lod1: [0.45, 0.02], lod2: [0.20, 0.04] },
+  "ARCH-005": { lod1: [0.45, 0.02], lod2: [0.20, 0.04] },
   "ARCH-006": { lod1: [0.30, 0.02], lod2: [0.10, 0.05] },
+  "ARCH-007": { lod1: [0.55, 0.02], lod2: [0.25, 0.045] },
+  "ARCH-008": { lod1: [0.45, 0.02], lod2: [0.20, 0.04] },
   "ARCH-009": { lod1: [0.47, 0.015], lod2: [0.25, 0.035] },
   "ARCH-010": { lod1: [0.50, 0.015], lod2: [0.25, 0.04] },
+  "ARCH-011": { lod1: [0.35, 0.02], lod2: [0.15, 0.045] },
 };
 
 for (const [assetId, profile] of Object.entries(profiles)) {
+  if (requestedAssets.size && !requestedAssets.has(assetId)) continue;
   const input = resolve(root, `assets/scene-pack/source/${assetId}/${assetId}.glb`);
   for (const [lod, [ratio, error]] of Object.entries(profile)) {
     const output = resolve(root, `assets/scene-pack/runtime/${lod}/${assetId}/${assetId}.glb`);

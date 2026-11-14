@@ -24,9 +24,13 @@ cpSync(
 const runtimeAssets = [
   ["lod1", "ARCH-003"],
   ["lod1", "ARCH-004"],
+  ["lod1", "ARCH-005"],
   ["lod2", "ARCH-006"],
+  ["lod1", "ARCH-007"],
+  ["lod1", "ARCH-008"],
   ["lod1", "ARCH-009"],
   ["lod1", "ARCH-010"],
+  ["lod1", "ARCH-011"],
 ];
 
 for (const [lod, assetId] of runtimeAssets) {

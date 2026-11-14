@@ -5,15 +5,24 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 const ASSET_URLS = {
   sideHall: new URL("../assets/scene-pack/runtime/lod1/ARCH-003/ARCH-003.glb", import.meta.url).href,
   corridor: new URL("../assets/scene-pack/runtime/lod1/ARCH-004/ARCH-004.glb", import.meta.url).href,
+  corridorCorner: new URL("../assets/scene-pack/runtime/lod1/ARCH-005/ARCH-005.glb", import.meta.url).href,
   wall: new URL("../assets/scene-pack/runtime/lod2/ARCH-006/ARCH-006.glb", import.meta.url).href,
+  wallCorner: new URL("../assets/scene-pack/runtime/lod1/ARCH-007/ARCH-007.glb", import.meta.url).href,
+  sideGate: new URL("../assets/scene-pack/runtime/lod1/ARCH-008/ARCH-008.glb", import.meta.url).href,
   pavilion: new URL("../assets/scene-pack/runtime/lod1/ARCH-009/ARCH-009.glb", import.meta.url).href,
   bridge: new URL("../assets/scene-pack/runtime/lod1/ARCH-010/ARCH-010.glb", import.meta.url).href,
+  stairs: new URL("../assets/scene-pack/runtime/lod1/ARCH-011/ARCH-011.glb", import.meta.url).href,
 };
 
 const wallInstances = [
   [-11.3, 0, 25.2, 0], [-7.3, 0, 25.2, 0], [7.3, 0, 25.2, 0], [11.3, 0, 25.2, 0],
   [-15.3, 0, 22.8, Math.PI / 2], [-15.3, 0, 18.8, Math.PI / 2], [-15.3, 0, 14.8, Math.PI / 2], [-15.3, 0, 10.8, Math.PI / 2],
-  [15.3, 0, 22.8, Math.PI / 2], [15.3, 0, 18.8, Math.PI / 2], [15.3, 0, 14.8, Math.PI / 2], [15.3, 0, 10.8, Math.PI / 2],
+  [15.3, 0, 22.8, Math.PI / 2], [15.3, 0, 18.8, Math.PI / 2], [15.3, 0, 10.8, Math.PI / 2],
+].map(([x, y, z, rotationY]) => ({ position: [x, y, z], rotationY }));
+
+const wallCornerInstances = [
+  [-15.3, 0, 25.2, 0],
+  [15.3, 0, 25.2, -Math.PI / 2],
 ].map(([x, y, z, rotationY]) => ({ position: [x, y, z], rotationY }));
 
 const ASSETS = [
@@ -35,6 +44,13 @@ const ASSETS = [
     ],
   },
   {
+    id: "ARCH-005",
+    label: "转角回廊",
+    url: ASSET_URLS.corridorCorner,
+    scale: [0.667, 1, 0.667],
+    instances: [{ position: [-12, 0, 18.4], rotationY: 0 }],
+  },
+  {
     id: "ARCH-006",
     label: "寺院围墙",
     url: ASSET_URLS.wall,
@@ -42,11 +58,25 @@ const ASSETS = [
     instances: wallInstances,
   },
   {
+    id: "ARCH-007",
+    label: "围墙转角",
+    url: ASSET_URLS.wallCorner,
+    scale: [1.333, 1.036, 1.619],
+    instances: wallCornerInstances,
+  },
+  {
+    id: "ARCH-008",
+    label: "庭院侧门",
+    url: ASSET_URLS.sideGate,
+    scale: [1.111, 1.058, 0.909],
+    instances: [{ position: [15.3, 0, 14.8], rotationY: Math.PI / 2 }],
+  },
+  {
     id: "ARCH-009",
     label: "竹林静坐亭",
     url: ASSET_URLS.pavilion,
     scale: [1.333, 1.333, 1.333],
-    instances: [{ position: [-12, 0, 19.2], rotationY: 0 }],
+    instances: [{ position: [-7.8, 0, 18.4], rotationY: 0 }],
   },
   {
     id: "ARCH-010",
@@ -54,6 +84,13 @@ const ASSETS = [
     url: ASSET_URLS.bridge,
     scale: [10, 7.65, 7.778],
     instances: [{ position: [8.6, 0.08, 14.5], rotationY: 0 }],
+  },
+  {
+    id: "ARCH-011",
+    label: "石阶",
+    url: ASSET_URLS.stairs,
+    scale: [3.333, 1.139, 2.5],
+    instances: [{ position: [-12, 0, 8.2], rotationY: Math.PI }],
   },
 ];
 

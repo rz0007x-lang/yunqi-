@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-architecture-02-connectors",
+  "goal": "补齐庭院闭合与连续步行所需的四类建筑连接件",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "sequential-review-gate",
+  "tasks": [
+    {
+      "asset_id": "ARCH-005",
+      "name": "转角回廊模块",
+      "face_target": 60000,
+      "prompt_section": "ARCH-005 转角回廊模块",
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7630134,
+      "completed_at": "2026-11-15T00:59:05+08:00",
+      "review": "pass; L shape and both openings verified; scale X/Z by 0.667, keep Y unchanged, then ground from minimum Y"
+    },
+    {
+      "asset_id": "ARCH-007",
+      "name": "围墙转角模块",
+      "face_target": 50000,
+      "prompt_section": "ARCH-007 围墙转角模块",
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7634070,
+      "completed_at": "2026-11-15T01:21:29+08:00",
+      "review": "pass; L shape, closed corner and flat ends verified; normalize to 4 by 2.6 by 4 meters and overlap straight walls slightly"
+    },
+    {
+      "asset_id": "ARCH-008",
+      "name": "侧门模块",
+      "face_target": 60000,
+      "prompt_section": "ARCH-008 侧门模块",
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7641284,
+      "completed_at": "2026-11-15T01:32:11+08:00",
+      "review": "pass; opening is unobstructed front-to-back and wall interfaces are flat; normalize to 5 by 4.2 by 2 meters"
+    },
+    {
+      "asset_id": "ARCH-011",
+      "name": "石阶模块",
+      "face_target": 40000,
+      "prompt_section": "ARCH-011 石阶模块",
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7644591,
+      "completed_at": "2026-11-15T01:38:33+08:00",
+      "review": "pass; five unobstructed steps and flat connection edges verified; normalize to 4 by 0.9 by 3 meters"
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "connection ends are open or flat exactly as specified",
+      "dimensions can be normalized without breaking connection cross-sections",
+      "walkable surfaces are continuous and unobstructed",
+      "materials match the accepted batch-01 visual language",
+      "no people, text, logos, statues or surrounding terrain"
+    ],
+    "on_fail": "revise only the failed connector prompt and regenerate before advancing"
+  },
+  "result": {
+    "status": "passed",
+    "accepted_count": 4,
+    "rejected_attempt_count": 0,
+    "completed_at": "2026-11-15T01:38:33+08:00",
+    "next_gate": "generate runtime LODs and assemble the connectors into the courtyard"
+  }
+}
