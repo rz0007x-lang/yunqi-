@@ -251,7 +251,9 @@ export class TempleScene {
     this.camera.lookAt(this.cameraTarget);
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", alpha: false });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+    const lowPowerDevice = window.innerWidth < 720 || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    this.pixelRatioCap = lowPowerDevice ? 1.25 : 1.75;
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio, this.pixelRatioCap));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
@@ -354,6 +356,7 @@ export class TempleScene {
   resize() {
     const width = this.canvas.clientWidth || window.innerWidth;
     const height = this.canvas.clientHeight || window.innerHeight;
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio, this.pixelRatioCap));
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();

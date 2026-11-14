@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
 const ASSET_URLS = {
-  sideHall: new URL("../assets/scene-pack/source/ARCH-003/ARCH-003.glb", import.meta.url).href,
-  corridor: new URL("../assets/scene-pack/source/ARCH-004/ARCH-004.glb", import.meta.url).href,
-  wall: new URL("../assets/scene-pack/source/ARCH-006/ARCH-006.glb", import.meta.url).href,
-  pavilion: new URL("../assets/scene-pack/source/ARCH-009/ARCH-009.glb", import.meta.url).href,
-  bridge: new URL("../assets/scene-pack/source/ARCH-010/ARCH-010.glb", import.meta.url).href,
+  sideHall: new URL("../assets/scene-pack/runtime/lod1/ARCH-003/ARCH-003.glb", import.meta.url).href,
+  corridor: new URL("../assets/scene-pack/runtime/lod1/ARCH-004/ARCH-004.glb", import.meta.url).href,
+  wall: new URL("../assets/scene-pack/runtime/lod2/ARCH-006/ARCH-006.glb", import.meta.url).href,
+  pavilion: new URL("../assets/scene-pack/runtime/lod1/ARCH-009/ARCH-009.glb", import.meta.url).href,
+  bridge: new URL("../assets/scene-pack/runtime/lod1/ARCH-010/ARCH-010.glb", import.meta.url).href,
 };
 
 const wallInstances = [
@@ -126,7 +127,7 @@ function addSliceLights(parent) {
 }
 
 export async function loadCourtyardSlice({ parent, renderer, onStatus }) {
-  const loader = new GLTFLoader();
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const total = ASSETS.length;
   let loaded = 0;
   onStatus?.({ state: "loading", loaded, total });

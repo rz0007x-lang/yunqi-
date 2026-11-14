@@ -34,6 +34,7 @@
       import * as THREE from 'three';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
       const canvas = document.querySelector('#viewport');
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -88,7 +89,7 @@
         controls.update();
       }
 
-      new GLTFLoader().load(assetUrl, (gltf) => {
+      new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(assetUrl, (gltf) => {
         const model = gltf.scene;
         scene.add(model);
         model.traverse((object) => {
