@@ -4,3 +4,5 @@ node_modules/
 # Keep the production GLB, but do not commit generation archives or local previews.
 assets/lux3d/**/*.zip
 assets/lux3d/**/preview.html
+assets/scene-pack/source/**/*.zip
+assets/scene-pack/source/**/rejected-attempt-*/

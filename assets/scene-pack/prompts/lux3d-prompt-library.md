@@ -28,7 +28,7 @@ A compact side hall, approximately 10 meters wide, 8 meters deep and 7 meters ta
 
 ```text
 {{COMMON_PREFIX}}
-A modular covered temple corridor exactly 4 meters long, 2.6 meters deep and 3.4 meters tall. Two open ends must align perfectly so repeated copies form one continuous walkway. Timber columns at both ends, waist-high wooden railing on the outer side, pale plaster wall or optional open inner side, blue-green tiled sloping roof, warm gray stone floor. Keep the end cross-sections simple and symmetrical for seamless repetition.
+A repeatable, tunnel-like covered temple walkway module. Its length along the Z axis is exactly 4 meters, its walkable width along the X axis is 2.6 meters, and its total height along the Y axis is 3.4 meters. BOTH Z END PLANES MUST BE COMPLETELY OPEN FROM FLOOR TO RAFTERS so a person can see and walk straight through the entire module. Absolutely no end wall, end panel, door, screen, railing, beam lattice or decorative obstruction may close either end. The two end cross-sections must be identical, flat and aligned so three copies placed end-to-end form one uninterrupted corridor. Use two parallel rows of dark timber columns, low wooden railings only along the two long sides, a muted blue-green tiled roof and a warm-gray stone walking floor. No plaster walls anywhere. Keep the geometry simple, symmetrical and explicitly modular rather than a standalone pavilion or room.
 {{COMMON_SUFFIX}}
 ```
 

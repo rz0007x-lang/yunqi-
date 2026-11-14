@@ -13,35 +13,66 @@
       "name": "侧殿模块",
       "face_target": 100000,
       "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-003-侧殿模块",
-      "status": "ready"
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7530611,
+      "submitted_at": "2026-11-14T20:30:39+08:00",
+      "completed_at": "2026-11-14T20:48:14+08:00",
+      "review": "pass; uniform scale 1.25 and Y-ground normalization required"
     },
     {
       "asset_id": "ARCH-004",
       "name": "直线回廊模块",
       "face_target": 50000,
       "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-004-直线回廊模块",
-      "status": "ready"
+      "status": "accepted_with_normalization",
+      "attempts": [
+        {
+          "provider_task_id": 7538097,
+          "submitted_at": "2026-11-14T20:49:48+08:00",
+          "status": "rejected",
+          "review": "one end fully closed by a plaster wall; not repeatable"
+        },
+        {
+          "provider_task_id": 7547245,
+          "submitted_at": "2026-11-14T21:13:18+08:00",
+          "status": "accepted",
+          "completed_at": "2026-11-14T21:25:34+08:00",
+          "review": "both ends fully open; uniform scale and Y-ground normalization required"
+        }
+      ]
     },
     {
       "asset_id": "ARCH-006",
       "name": "围墙模块",
       "face_target": 50000,
       "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-006-围墙模块",
-      "status": "ready"
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7552988,
+      "submitted_at": "2026-11-14T21:27:26+08:00",
+      "completed_at": "2026-11-14T21:32:44+08:00",
+      "review": "pass; non-uniform scale, Y-ground normalization and aggressive LOD required"
     },
     {
       "asset_id": "ARCH-009",
       "name": "竹林静坐亭",
       "face_target": 80000,
       "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-009-竹林静坐亭",
-      "status": "ready"
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7558060,
+      "submitted_at": "2026-11-14T21:40:12+08:00",
+      "completed_at": "2026-11-14T22:00:49+08:00",
+      "review": "pass; uniform scale 1.333, Y-ground normalization and LOD required"
     },
     {
       "asset_id": "ARCH-010",
       "name": "石桥模块",
       "face_target": 60000,
       "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-010-石桥模块",
-      "status": "ready"
+      "status": "accepted_with_normalization",
+      "provider_task_id": 7566454,
+      "submitted_at": "2026-11-14T22:01:27+08:00",
+      "completed_at": "2026-11-14T22:04:48+08:00",
+      "review": "pass; scale normalization and Y-ground normalization required"
     }
   ],
   "review_gate": {
@@ -56,5 +87,14 @@
       "no people, text, logos or religious statues"
     ],
     "on_fail": "revise prompt and regenerate failed asset before creating batch 02"
+  },
+  "result": {
+    "status": "passed",
+    "accepted_count": 5,
+    "rejected_attempt_count": 1,
+    "regenerated_assets": ["ARCH-004"],
+    "must_pass_satisfied": true,
+    "completed_at": "2026-11-14T22:04:48+08:00",
+    "next_gate": "normalize accepted GLBs, generate LODs, then integrate a first complete courtyard slice"
   }
 }

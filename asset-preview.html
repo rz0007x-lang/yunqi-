@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>云栖资产验收台</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #101613; color: #e8eee9; font-family: ui-sans-serif, system-ui, sans-serif; }
+      canvas { display: block; width: 100%; height: 100%; }
+      aside { position: fixed; left: 18px; top: 18px; z-index: 2; width: min(360px, calc(100vw - 36px)); padding: 14px 16px; border: 1px solid #6f827566; border-radius: 12px; background: #0b100dd9; backdrop-filter: blur(12px); }
+      h1 { margin: 0 0 7px; font-size: 16px; font-weight: 650; letter-spacing: .06em; }
+      p { margin: 4px 0; font-size: 12px; line-height: 1.5; color: #b8c5bc; }
+      strong { color: #f2c979; font-weight: 600; }
+      nav { display: flex; gap: 7px; margin-top: 10px; }
+      button { border: 1px solid #798c7b66; border-radius: 8px; padding: 7px 10px; background: #26342bcc; color: #e8eee9; cursor: pointer; }
+      button:hover { background: #35483b; }
+      #error { color: #ff9f87; }
+    </style>
+    <script type="importmap">
+      {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/"}}
+    </script>
+  </head>
+  <body>
+    <aside>
+      <h1>云栖资产验收台</h1>
+      <p id="asset">加载模型中……</p>
+      <p id="metrics"></p>
+      <p id="error"></p>
+      <nav><button data-view="front">正面</button><button data-view="side">侧面</button><button data-view="back">背面</button><button data-view="top">俯视</button></nav>
+    </aside>
+    <canvas id="viewport"></canvas>
+    <script type="module">
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      const canvas = document.querySelector('#viewport');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.45;
+      renderer.shadowMap.enabled = true;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x101613);
+      scene.environment = null;
+      scene.add(new THREE.HemisphereLight(0xbfd5ff, 0x2d241d, 2.2));
+      const key = new THREE.DirectionalLight(0xffe3b3, 4.5);
+      key.position.set(8, 14, 10);
+      key.castShadow = true;
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0x8db8ff, 2.6);
+      rim.position.set(-10, 7, -9);
+      scene.add(rim);
+
+      const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 1000);
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = true;
+      controls.dampingFactor = .08;
+
+      const grid = new THREE.GridHelper(40, 40, 0x708376, 0x354139);
+      scene.add(grid);
+      const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ color: 0x000000, opacity: .28 }));
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      ground.position.y = -.002;
+      scene.add(ground);
+      scene.add(new THREE.AxesHelper(2));
+
+      const params = new URLSearchParams(location.search);
+      const assetUrl = params.get('asset') || '/assets/scene-pack/source/ARCH-003/ARCH-003.glb';
+      document.querySelector('#asset').innerHTML = `<strong>${assetUrl.split('/').pop()}</strong>`;
+      let center = new THREE.Vector3();
+      let radius = 8;
+
+      function setView(view) {
+        const distance = radius * 2.5 / Math.min(camera.aspect, 1);
+        const offsets = {
+          front: new THREE.Vector3(0, radius * .4, distance),
+          side: new THREE.Vector3(distance, radius * .4, 0),
+          back: new THREE.Vector3(0, radius * .4, -distance),
+          top: new THREE.Vector3(0, distance, .001),
+        };
+        camera.position.copy(center).add(offsets[view] || offsets.front);
+        controls.target.copy(center);
+        controls.update();
+      }
+
+      new GLTFLoader().load(assetUrl, (gltf) => {
+        const model = gltf.scene;
+        scene.add(model);
+        model.traverse((object) => {
+          if (!object.isMesh) return;
+          object.castShadow = true;
+          object.receiveShadow = true;
+          if (object.material?.map) object.material.map.colorSpace = THREE.SRGBColorSpace;
+        });
+        const rawBox = new THREE.Box3().setFromObject(model);
+        const rawMinY = rawBox.min.y;
+        model.position.y -= rawMinY;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        center = box.getCenter(new THREE.Vector3());
+        radius = Math.max(size.x, size.y, size.z) * .58;
+        document.querySelector('#metrics').textContent = `包围盒 ${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)}；源模型最低 Y=${rawMinY.toFixed(2)}；预览已落地归零`;
+        camera.near = Math.max(radius / 100, .01);
+        camera.far = radius * 30;
+        camera.updateProjectionMatrix();
+        setView(params.get('view') || 'front');
+      }, undefined, (error) => {
+        document.querySelector('#error').textContent = `加载失败：${error.message}`;
+      });
+
+      document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight, false);
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      addEventListener('resize', resize);
+      resize();
+      renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+    </script>
+  </body>
+</html>
