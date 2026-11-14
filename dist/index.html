@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07120f" />
+    <meta name="description" content="云栖电子禅堂——一个不必说话，也能与陌生人安静共处的线上空间。" />
+    <title>云栖 · 电子禅堂</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <section id="boot" class="boot" aria-live="polite">
+        <div class="boot__sigil" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <p class="boot__eyebrow">YUNQI / NODE 07</p>
+        <h1>云 栖</h1>
+        <p id="boot-copy">正在点亮山门的数据灯……</p>
+        <div class="boot__track"><i id="boot-progress"></i></div>
+        <p class="boot__note">不必说什么，找一个位置坐下就好。</p>
+      </section>
+
+      <section id="experience" class="experience" hidden>
+        <canvas id="world" aria-label="云栖电子禅堂三维场景"></canvas>
+        <div id="labels" class="labels" aria-hidden="true"></div>
+        <div class="vignette"></div>
+
+        <header class="topbar glass">
+          <div class="brand">
+            <span class="brand__mark"><i></i><i></i><i></i></span>
+            <div><b>云栖</b><small>电子禅堂 · 第七节点</small></div>
+          </div>
+          <div class="presence" title="当前空间中的安静来客">
+            <span class="presence__pulse"></span>
+            <strong id="visitor-count">24</strong><small>人在此</small>
+          </div>
+          <button id="sound-toggle" class="icon-button" type="button" aria-label="开启环境声音" aria-pressed="false">
+            <span class="sound-icon"><i></i><i></i><i></i></span>
+          </button>
+        </header>
+
+        <aside class="identity glass">
+          <span class="identity__orb"></span>
+          <div><small>你的法号</small><strong id="visitor-name">正在生成</strong></div>
+        </aside>
+
+        <aside class="guide glass">
+          <span>点击空坐垫入座</span>
+          <i></i>
+          <span>拖动画面环顾大殿</span>
+        </aside>
+
+        <div id="notice" class="notice" role="status">山门已开。这里没有聊天，只有陪伴。</div>
+
+        <nav class="ritual-dock glass" aria-label="仪式动作">
+          <button data-action="gassho" type="button"><span>合</span><b>合掌</b></button>
+          <button data-action="bow" type="button"><span>礼</span><b>礼拜</b></button>
+          <button data-action="beads" type="button"><span>念</span><b>念珠</b></button>
+          <button data-action="moktak" type="button"><span>木</span><b>木鱼</b></button>
+          <button data-action="meditate" type="button"><span>止</span><b>静坐</b></button>
+        </nav>
+
+        <button id="leave-seat" class="leave-seat glass" type="button" hidden>起身</button>
+
+        <dialog id="beads-dialog" class="ritual-dialog">
+          <button class="dialog-close" data-close-dialog type="button" aria-label="关闭">×</button>
+          <p class="dialog-kicker">一念一珠</p>
+          <h2>转动念珠</h2>
+          <div id="beads-ring" class="beads-ring" role="button" tabindex="0" aria-label="点击或滑动念珠">
+            <div class="beads-center"><strong id="beads-count">0</strong><small>/ 108</small></div>
+          </div>
+          <p id="beads-message">每一次触碰，都只记在此刻。</p>
+          <button id="beads-turn" class="primary-button" type="button">转动一珠</button>
+        </dialog>
+
+        <dialog id="meditate-dialog" class="ritual-dialog ritual-dialog--timer">
+          <button class="dialog-close" data-close-dialog type="button" aria-label="关闭">×</button>
+          <p class="dialog-kicker">暂离喧嚣</p>
+          <h2>与此刻同坐</h2>
+          <div class="timer-ring"><strong id="timer-value">03:00</strong><small id="timer-state">尚未开始</small></div>
+          <div class="timer-options">
+            <button data-minutes="1" type="button">1 分钟</button>
+            <button data-minutes="3" class="is-active" type="button">3 分钟</button>
+            <button data-minutes="5" type="button">5 分钟</button>
+          </div>
+          <button id="timer-toggle" class="primary-button" type="button">开始静坐</button>
+        </dialog>
+
+        <section id="arrival" class="arrival glass">
+          <p>欢迎来到云栖</p>
+          <h2>这里不必开口</h2>
+          <p>你会以匿名小行者的身份，与其他人共享同一座电子禅堂。寻找一个空坐垫，安静坐一会儿。</p>
+          <button id="enter-button" class="primary-button" type="button">沿光进入</button>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
