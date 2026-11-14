@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "pack_id": "yunqi-case-level-scene-pack-v1",
+  "visual_bible": "../../docs/epics/case-level-environment/visual-bible.md",
+  "map_layout": "../../docs/epics/case-level-environment/map-layout.md",
+  "coordinate_system": {
+    "unit": "meter",
+    "up_axis": "Y",
+    "entrance_facing": "+Z",
+    "origin": "bottom-center"
+  },
+  "status_values": ["planned", "queued", "generating", "review", "accepted", "integrated", "rejected"],
+  "delivery_targets": {
+    "source_format": "GLB 2.0 PBR",
+    "runtime_geometry": "Meshopt or Draco",
+    "runtime_texture": "KTX2",
+    "texture_default": "2048",
+    "texture_hero": "4096",
+    "runtime_pack_budget_mb": 100
+  },
+  "assets": [
+    {"id":"ARCH-001","name":"主殿","category":"architecture","zone":"zone-hall","priority":"P0","dimensions_m":[18,10,20],"method":"existing-lux3d","status":"integrated","lod":[0],"source":"assets/lux3d/main-hall-turbo/main-hall-turbo.glb"},
+    {"id":"ARCH-002","name":"山门","category":"architecture","zone":"zone-entry","priority":"P0","dimensions_m":[11,8,8],"method":"existing-lux3d","status":"integrated","lod":[0],"source":"assets/lux3d/temple-shell-turbo/temple-shell-turbo.glb"},
+    {"id":"ARCH-003","name":"侧殿模块","category":"architecture","zone":"zone-courtyard","priority":"P0","dimensions_m":[10,7,8],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":2},
+    {"id":"ARCH-004","name":"直线回廊模块","category":"architecture","zone":"zone-courtyard","priority":"P0","dimensions_m":[4,3.4,2.6],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":2},
+    {"id":"ARCH-005","name":"转角回廊模块","category":"architecture","zone":"zone-courtyard","priority":"P0","dimensions_m":[4,3.4,4],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":1},
+    {"id":"ARCH-006","name":"寺院围墙直线模块","category":"architecture","zone":"shared","priority":"P0","dimensions_m":[4,2.6,0.45],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"ARCH-007","name":"寺院围墙转角模块","category":"architecture","zone":"shared","priority":"P0","dimensions_m":[4,2.6,4],"method":"lux3d","status":"planned","lod":[0,1],"variants":1},
+    {"id":"ARCH-008","name":"侧门模块","category":"architecture","zone":"shared","priority":"P1","dimensions_m":[5,4.2,2],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":1},
+    {"id":"ARCH-009","name":"竹林静坐亭","category":"architecture","zone":"zone-west","priority":"P0","dimensions_m":[6,5.5,6],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":1},
+    {"id":"ARCH-010","name":"石桥模块","category":"architecture","zone":"zone-courtyard","priority":"P0","dimensions_m":[4.5,1.1,7],"method":"lux3d","status":"planned","lod":[0,1],"variants":1},
+    {"id":"ARCH-011","name":"石阶模块","category":"architecture","zone":"shared","priority":"P0","dimensions_m":[4,0.9,3],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+
+    {"id":"ENV-001","name":"近景岩壁","category":"environment","zone":"zone-entry","priority":"P1","dimensions_m":[12,9,6],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":2},
+    {"id":"ENV-002","name":"岩石组合","category":"environment","zone":"shared","priority":"P1","dimensions_m":[3,2,3],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":3},
+    {"id":"ENV-003","name":"高竹组合","category":"environment","zone":"zone-west","priority":"P1","dimensions_m":[3,7,3],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":3},
+    {"id":"ENV-004","name":"疏竹组合","category":"environment","zone":"shared","priority":"P1","dimensions_m":[3,5,3],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":2},
+    {"id":"ENV-005","name":"高松树","category":"environment","zone":"zone-entry","priority":"P1","dimensions_m":[5,11,5],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":2},
+    {"id":"ENV-006","name":"迎风松树","category":"environment","zone":"zone-courtyard","priority":"P1","dimensions_m":[7,8,5],"method":"lux3d","status":"planned","lod":[0,1,2],"variants":2},
+    {"id":"ENV-007","name":"水池边缘模块","category":"environment","zone":"zone-courtyard","priority":"P0","dimensions_m":[4,0.6,2],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"ENV-008","name":"溪流岸边模块","category":"environment","zone":"zone-west","priority":"P1","dimensions_m":[5,1.2,3],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"ENV-009","name":"苔藓地表贴片","category":"environment","zone":"shared","priority":"P1","dimensions_m":[4,0.08,4],"method":"material-plane","status":"planned","lod":[0],"variants":4},
+
+    {"id":"PROP-001","name":"石灯","category":"prop","zone":"shared","priority":"P0","dimensions_m":[0.7,1.8,0.7],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"PROP-002","name":"木制引路灯","category":"prop","zone":"shared","priority":"P0","dimensions_m":[0.5,2.1,0.5],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"PROP-003","name":"香炉","category":"prop","zone":"zone-hall","priority":"P1","dimensions_m":[1.6,1.3,1.1],"method":"lux3d","status":"planned","lod":[0,1],"variants":1},
+    {"id":"PROP-004","name":"寺院钟","category":"prop","zone":"zone-east","priority":"P1","dimensions_m":[1.8,2.2,1.8],"method":"lux3d","status":"planned","lod":[0,1],"variants":1},
+    {"id":"PROP-005","name":"仪式鼓","category":"prop","zone":"zone-east","priority":"P1","dimensions_m":[1.6,1.8,1.2],"method":"lux3d","status":"planned","lod":[0,1],"variants":1},
+    {"id":"PROP-006","name":"供桌","category":"prop","zone":"zone-hall","priority":"P1","dimensions_m":[2.4,1.1,0.9],"method":"lux3d","status":"planned","lod":[0,1],"variants":1},
+    {"id":"PROP-007","name":"原创石碑","category":"prop","zone":"zone-courtyard","priority":"P2","dimensions_m":[1.2,2.4,0.5],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"PROP-008","name":"蓄水陶缸","category":"prop","zone":"shared","priority":"P2","dimensions_m":[1.1,1.2,1.1],"method":"lux3d","status":"planned","lod":[0,1],"variants":2},
+    {"id":"PROP-009","name":"木制区域牌","category":"prop","zone":"shared","priority":"P1","dimensions_m":[1.6,1.8,0.3],"method":"lux3d","status":"planned","lod":[0,1],"variants":3},
+    {"id":"PROP-010","name":"禅修坐垫","category":"prop","zone":"zone-hall","priority":"P1","dimensions_m":[0.9,0.14,0.75],"method":"lux3d","status":"planned","lod":[0,1],"variants":3}
+  ]
+}

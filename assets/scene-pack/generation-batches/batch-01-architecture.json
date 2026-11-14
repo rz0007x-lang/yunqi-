@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-architecture-01",
+  "goal": "先验证建筑模块是否能与现有山门和大殿形成统一风格，再扩大生成范围",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "enable_pbr": true,
+  "output_formats": ["GLB", "ZIP"],
+  "execution": "sequential-review-gate",
+  "tasks": [
+    {
+      "asset_id": "ARCH-003",
+      "name": "侧殿模块",
+      "face_target": 100000,
+      "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-003-侧殿模块",
+      "status": "ready"
+    },
+    {
+      "asset_id": "ARCH-004",
+      "name": "直线回廊模块",
+      "face_target": 50000,
+      "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-004-直线回廊模块",
+      "status": "ready"
+    },
+    {
+      "asset_id": "ARCH-006",
+      "name": "围墙模块",
+      "face_target": 50000,
+      "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-006-围墙模块",
+      "status": "ready"
+    },
+    {
+      "asset_id": "ARCH-009",
+      "name": "竹林静坐亭",
+      "face_target": 80000,
+      "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-009-竹林静坐亭",
+      "status": "ready"
+    },
+    {
+      "asset_id": "ARCH-010",
+      "name": "石桥模块",
+      "face_target": 60000,
+      "prompt_ref": "../prompts/lux3d-prompt-library.md#arch-010-石桥模块",
+      "status": "ready"
+    }
+  ],
+  "review_gate": {
+    "minimum_pass_count": 4,
+    "must_pass": ["ARCH-003", "ARCH-004"],
+    "checks": [
+      "complete silhouette",
+      "front orientation and ground contact",
+      "dimensions can be normalized without visible distortion",
+      "materials match visual bible",
+      "openings and walkable surfaces remain usable",
+      "no people, text, logos or religious statues"
+    ],
+    "on_fail": "revise prompt and regenerate failed asset before creating batch 02"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "模块化场景资源包生产流程",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "definition", "label": "定义" },
+    { "id": "generation", "label": "生成" },
+    { "id": "validation", "label": "验收" },
+    { "id": "delivery", "label": "交付" }
+  ],
+  "phases": [
+    { "id": "prepare", "label": "准备", "fromCol": 0, "toCol": 1 },
+    { "id": "make", "label": "制作", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "ship", "label": "验收与接入", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["visual-rule", "map-gap", "batch-prompt", "lux-generation", "asset-check", "optimize", "manifest-update", "scene-ready"],
+  "nodes": [
+    { "id": "visual-rule", "lane": "definition", "col": 0, "type": "frontend", "label": "确认统一视觉", "sublabel": "材质、色温、比例", "width": 140 },
+    { "id": "map-gap", "lane": "definition", "col": 1, "type": "database", "label": "按地图找缺口", "sublabel": "只做需要的模块", "width": 140 },
+    { "id": "batch-prompt", "lane": "generation", "col": 2, "type": "messagebus", "label": "形成批次提示词", "sublabel": "尺寸和用途明确", "width": 140 },
+    { "id": "lux-generation", "lane": "generation", "col": 3, "type": "cloud", "label": "Lux3D 生成", "sublabel": "PBR GLB 基础资产", "width": 140 },
+    { "id": "asset-check", "lane": "validation", "col": 3, "type": "security", "label": "逐件视觉检查", "sublabel": "轮廓、开口和材质", "width": 140 },
+    { "id": "optimize", "lane": "validation", "col": 4, "type": "backend", "label": "统一与轻量化", "sublabel": "比例、原点、LOD、压缩", "width": 140 },
+    { "id": "manifest-update", "lane": "delivery", "col": 4, "type": "database", "label": "更新资产清单", "sublabel": "记录版本与验收结果", "width": 140 },
+    { "id": "scene-ready", "lane": "delivery", "col": 5, "type": "frontend", "label": "进入场景组装", "sublabel": "分区加载并复用", "tag": "完成", "width": 140 }
+  ],
+  "edges": [
+    { "id": "rule-gap", "from": "visual-rule", "to": "map-gap", "variant": "emphasis" },
+    { "id": "gap-prompt", "from": "map-gap", "to": "batch-prompt", "label": "确定优先级", "variant": "default" },
+    { "id": "prompt-generate", "from": "batch-prompt", "to": "lux-generation", "variant": "emphasis" },
+    { "id": "generate-check", "from": "lux-generation", "to": "asset-check", "label": "产物必须打开检查", "variant": "security" },
+    { "id": "check-optimize", "from": "asset-check", "to": "optimize", "variant": "default" },
+    { "id": "optimize-record", "from": "optimize", "to": "manifest-update", "label": "记录正式版本", "variant": "dashed" },
+    { "id": "record-ready", "from": "manifest-update", "to": "scene-ready", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "失败处理",
+      "items": [
+        "风格或结构不合格时重新生成，不直接接入",
+        "生成任务成功不等于资产验收成功"
+      ]
+    }
+  ]
+}

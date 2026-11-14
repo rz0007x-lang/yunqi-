@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "云栖达到案例级体验的制作路线",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "scene-first",
+        "label": "先完成场景",
+        "focus": ["visual-map", "asset-pack", "continuous-world", "rendering"],
+        "note": "先统一视觉和连续空间，再增加角色与联网能力。"
+      },
+      {
+        "id": "experience-polish",
+        "label": "体验完善",
+        "focus": ["continuous-world", "characters", "audio-ritual", "performance"],
+        "note": "让用户可以顺畅行走、停留、入座并完成仪式。"
+      },
+      {
+        "id": "multiplayer-last",
+        "label": "多人最后接入",
+        "focus": ["performance", "multiplayer"],
+        "note": "单人体验稳定后才接真实房间与跨设备同步。"
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "planning", "label": "空间与视觉" },
+    { "id": "production", "label": "资产制作" },
+    { "id": "experience", "label": "游览与仪式" },
+    { "id": "release", "label": "质量与联网" }
+  ],
+  "phases": [
+    { "id": "foundation", "label": "统一基础", "fromCol": 0, "toCol": 1 },
+    { "id": "world", "label": "形成世界", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "polish", "label": "完善并上线", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["visual-map", "asset-pack", "continuous-world", "rendering", "characters", "audio-ritual", "performance", "multiplayer"],
+  "nodes": [
+    { "id": "visual-map", "lane": "planning", "col": 0, "type": "frontend", "label": "视觉规范与地图", "sublabel": "统一风格和游览路线", "tag": "当前阶段", "width": 142 },
+    { "id": "asset-pack", "lane": "production", "col": 1, "type": "database", "label": "模块化资源包", "sublabel": "建筑、自然、道具", "width": 142 },
+    { "id": "continuous-world", "lane": "experience", "col": 2, "type": "frontend", "label": "连续可行走世界", "sublabel": "移动、镜头与碰撞", "width": 142 },
+    { "id": "rendering", "lane": "production", "col": 3, "type": "cloud", "label": "案例级渲染", "sublabel": "光照、材质与环境", "width": 142 },
+    { "id": "characters", "lane": "experience", "col": 3, "type": "frontend", "label": "角色与动画", "sublabel": "走、坐、礼拜与过渡", "width": 142 },
+    { "id": "audio-ritual", "lane": "experience", "col": 4, "type": "messagebus", "label": "空间声音与仪式", "sublabel": "区域声音和身体反馈", "width": 142 },
+    { "id": "performance", "lane": "release", "col": 4, "type": "security", "label": "性能与设备验收", "sublabel": "分区加载、LOD、压缩", "width": 142 },
+    { "id": "multiplayer", "lane": "release", "col": 5, "type": "backend", "label": "真实多人房间", "sublabel": "最后接入跨设备同步", "tag": "最后一步", "width": 142 }
+  ],
+  "edges": [
+    { "id": "map-assets", "from": "visual-map", "to": "asset-pack", "label": "按地图缺口制作", "variant": "emphasis" },
+    { "id": "assets-world", "from": "asset-pack", "to": "continuous-world", "label": "组合成连续空间", "variant": "emphasis" },
+    { "id": "world-render", "from": "continuous-world", "to": "rendering", "label": "完成空间后统一光影", "variant": "default" },
+    { "id": "render-characters", "from": "rendering", "to": "characters", "variant": "default" },
+    { "id": "characters-audio", "from": "characters", "to": "audio-ritual", "variant": "default" },
+    { "id": "audio-performance", "from": "audio-ritual", "to": "performance", "label": "完整体验进入验收", "variant": "dashed" },
+    { "id": "performance-multiplayer", "from": "performance", "to": "multiplayer", "label": "单人版稳定后接入", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "当前执行",
+      "items": [
+        "建立完整地图、资产清单和统一提示词",
+        "现有山门与大殿作为风格基准"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "明确后置",
+      "items": [
+        "场景和单人体验稳定前不扩展多人",
+        "生成资产必须经过统一比例与性能处理"
+      ]
+    }
+  ]
+}
