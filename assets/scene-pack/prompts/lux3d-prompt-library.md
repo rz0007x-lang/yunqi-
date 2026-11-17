@@ -64,11 +64,91 @@ A modular exterior temple stair exactly 4 meters wide, 3 meters deep and 0.9 met
 {{COMMON_SUFFIX}}
 ```
 
+### ARCH-012 主殿闭合屋顶
+
+```text
+{{COMMON_PREFIX}}
+One complete standalone traditional East Asian two-slope gable roof module, exactly 16.8 meters wide along X, 18.4 meters long along Z and approximately 3.0 meters high from the lowest eave to the ridge. It must have EXACTLY TWO long rectangular roof planes: one continuous left slope and one continuous right slope. It must have EXACTLY ONE straight central ridge running continuously along the Z axis from the front gable to the rear gable. BOTH left and right roof slopes must be fully present, symmetric, watertight and continuously tiled from this single central ridge down to their outer X-side eaves. This asset specifically repairs a hall whose entire right roof slope is missing, so no half roof, open side, cutaway, exploded section or transparent surface is acceptable.
+
+Use dense overlapping muted blue-green ceramic roof tiles with individually readable rows, dark warm timber fascia, thick layered eaves, closed ridge caps and restrained upward-curving corners. The front and rear gable-end verge lines must be complete and symmetrical. The underside must include a coherent dark timber rafter and purlin grid spanning both slopes so the roof reads as structurally finished when viewed from inside the hall. All tiles, ridge pieces, fascia boards and rafters must connect into one physically plausible roof assembly. Subtle humid-night patina, small moss traces in tile seams and mild edge wear only; no holes, daylight gaps, missing rows or floating ornaments.
+
+STRICT ROOF TYPOLOGY: simple longitudinal gable roof only. NO hipped roof, hip-and-gable roof, pyramidal roof, pavilion roof, four-slope roof, cross-gable roof, cross ridge, ridge along X, diagonal hip ridge, four quadrants, central peak or square canopy. In top view there must be only two continuous rectangular tile fields divided by one Z-axis ridge.
+
+ROOF ONLY. No columns, walls, doors, windows, floor, foundation, stairs, room, temple building, lanterns, statue, people, text, logo, terrain or background. The lowest eave contact plane must be level and centered at the origin, with the front gable facing positive Z. Clean reusable overlay module, closed geometry, high-quality PBR tiles and timber, production-ready Three.js GLB.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-013 山门单扇木门
+
+```text
+{{COMMON_PREFIX}}
+A single functional traditional temple gate door leaf, exactly 2.25 meters wide, 0.18 meters thick and 3.8 meters tall, designed to be duplicated and mirrored into a symmetrical two-leaf closable main gate. One rigid rectangular dark warm timber leaf with thick vertical stiles, five horizontal rails, recessed plank panels, a complete reinforced hinge-side edge and a straight meeting edge. Add restrained aged-bronze round studs in an orderly grid and two compact bronze hinge straps fixed only to the hinge-side edge. The bottom and top edges must be straight, level and fully finished. Realistic joinery, readable plank grain, humid-night patina, worn bronze highlights and subtle darkening near the bottom.
+
+DOOR LEAF ONLY. No gate frame, columns, wall, roof, threshold, floor, steps, handles crossing the center seam, second door leaf, environment or building. The front face looks toward positive Z. The hinge-side vertical edge must be on negative X so the runtime can place a pivot along that edge and swing the leaf open. Closed solid geometry, no window, lattice opening, broken plank or transparent panel. One connected production-ready movable door leaf with clean PBR timber and aged-bronze materials.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-014 古庙山门单扇木门
+
+```text
+{{COMMON_PREFIX}}
+One monumental single door leaf for a centuries-old secluded mountain temple, exactly 2.25 meters wide, 0.22 meters thick and 3.8 meters tall. It will be duplicated and mirrored into a two-leaf closable main gate, so the leaf must be rigid, rectangular, flat at the top and bottom, and structurally complete on every side. Use massive hand-hewn old-growth timber with deep readable grain, slightly uneven traditional plank widths, thick mortise-and-tenon perimeter stiles and three broad interior rails. The primary finish is very dark desaturated vermilion lacquer worn thin by decades of rain and touch, revealing warm brown wood at edges and lower panels. Add restrained blackened wrought-iron hinge straps on the negative-X hinge edge, hand-forged square nails, and one heavy aged-bronze ring knocker on a simple round backplate placed toward the positive-X meeting edge. The lower third has believable humid stains, tiny lacquer chips and subtle moss traces, but remains strong and maintained rather than ruined.
+
+The design must feel like an authentic quiet ancient monastery gate, sober and heavy rather than an imperial palace door. Use deep recessed plank panels and simple traditional framing; no repeated gold stud grid, no bright red new paint, no glossy lacquer, no ornate dragon, no guardian face, no carved deity, no window, no lattice opening, no paper panel and no modern hardware. When mirrored, the positive-X meeting edge must remain perfectly straight and gap-free, and the two ring knockers must read as a balanced pair. The front face looks toward positive Z and the hinge-side vertical edge is negative X.
+
+DOOR LEAF ONLY. No gate frame, columns, wall, roof, threshold, floor, steps, second leaf, environment, text, logo, people, statue, lantern or floating parts. Clean bottom contact plane, closed solid geometry, production-ready movable PBR door leaf for Three.js.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-015 山中古庙石门单扇
+
+```text
+{{COMMON_PREFIX}}
+One monumental functional stone door leaf for the main gate of the same secluded mountain temple complex, exactly 2.25 meters wide, 0.28 meters thick and 3.8 meters tall. It will be duplicated and mirrored into a symmetrical two-leaf closable gate, so create one rigid rectangular leaf with a perfectly straight positive-X meeting edge, a complete negative-X pivot edge, level top and bottom, and finished geometry on front, back and all four sides.
+
+The entire door leaf is built from heavy warm-gray stone with a subtle muted green cast, matching the existing temple steps, courtyard paving, pond banks and arched stone bridge. Use three large fitted stone panels held inside a thick carved stone perimeter frame, shallow recessed borders, restrained hand-chiseled tool marks, small mineral color variation, dark humid joints, softly worn corners and very limited moss only in the lowest recesses. The stone must feel ancient, dense and load-bearing, with PBR roughness around 0.82 to 0.94: never white marble, polished granite, modern tile, concrete, plaster or painted wood. Add one simple aged-bronze ring pull on a compact circular backplate near the positive-X meeting edge and two restrained dark-bronze pivot collars on the negative-X side. Hardware must be secondary to the stone and naturally oxidized.
+
+The design is sober, quiet and monastic rather than imperial or fantasy. No gold stud grid, dragon, guardian face, deity, lotus statue, text, rune, glowing symbol, window, lattice, paper panel, timber frame, visible wooden board, modern hinge, metal sci-fi panel or ornamental palace carving. No cracks large enough to look broken, no missing corner and no ruin damage. The mirrored pair must meet cleanly in the center and still read as two movable stone leaves.
+
+STONE DOOR LEAF ONLY. No gate frame, columns, wall, roof, threshold, foundation slab, floor, steps, pedestal, second leaf, terrain, background, people, statue, lantern, plants or floating parts. Do not generate any base underneath the door. Front faces positive Z. Clean bottom contact edge, closed solid geometry, production-ready PBR stone asset for Three.js.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-016 古庙一体式山门建筑
+
+```text
+{{COMMON_PREFIX}}
+One complete monumental main-gate building for an old secluded mountain temple, designed as one coherent architectural composition with its closed double doors fully integrated into the timber structure. Overall target dimensions are 10.4 meters wide along X, 4.6 meters deep along Z and approximately 8.0 meters tall along Y. The front faces positive Z.
+
+ARCHITECTURE: a broad warm-gray weathered stone base with no protruding platform, four massive dark warm-brown timber posts, a thick mortise-and-tenon lintel and beam frame, restrained old dougong brackets, pale aged plaster side bays, and one complete muted blue-green ceramic tiled gable roof. The roof has two continuous slopes, one central ridge running front-to-back, deep layered eaves, visible dark rafters and restrained upturned corners. Materials must match the existing temple complex: old timber with rough hand-rubbed grain, gray-green tiles, warm gray stone, humid stains and very limited moss near the bottom. Sober mountain-monastery proportions, not an imperial palace.
+
+INTEGRATED DOUBLE DOORS: centered in the timber frame is a 4.5 meter wide by approximately 3.9 meter tall closed two-leaf gate. Each leaf is approximately 2.25 meters wide and must look purpose-built for this exact opening, sitting flush inside the same jambs and lintel with no pasted-on or floating appearance. Use the same centuries-old dark desaturated reddish-brown timber as the gate body, three deep recessed plank panels per leaf, thick perimeter stiles aligned with the surrounding frame, blackened wrought-iron hinge straps attached naturally to the outer jambs, and a balanced pair of aged-bronze ring knockers near the center seam. The two leaves must have a perfectly straight readable center seam, matching height, matching panel rhythm and physically plausible hinge axes. No modern frame around the doors and no material mismatch between doors and building.
+
+PART-SEPARATION REQUIREMENT: although the asset is one complete assembled gate building, preserve three clearly separable connected components with clean physical gaps: (1) stationary gate building including roof, columns, side bays, jambs and lintel; (2) complete left door leaf; (3) complete right door leaf. The door leaves must not fuse, intersect or share bridge geometry with the stationary frame, floor, threshold or each other. Each leaf must be watertight and movable after semantic part splitting.
+
+One complete gate building only. No stairs, approach road, courtyard floor, surrounding wall extensions, terrain slab, lanterns, statues, guardian figures, signs, text, logos, people, plants or second building. No bright new red paint, gold stud grid, dragon relief, neon, glass, modern metal door, detached door panel, open doorway, missing roof side or floating ornament. Clean flat bottom contact plane, closed production-ready PBR geometry for Three.js.
+{{COMMON_SUFFIX}}
+```
+
 ### ARCH-006 围墙模块
 
 ```text
 {{COMMON_PREFIX}}
 A straight modular temple courtyard wall exactly 4 meters long, 0.45 meters deep and 2.6 meters tall. Warm gray stone base, pale aged plaster middle, dark timber cap and muted blue-green tiled top. Both ends are flat and aligned for seamless repetition. Subtle moisture stains and moss near the base, restrained wear, no broken sections.
+{{COMMON_SUFFIX}}
+```
+
+### ARCH-017 山门围墙短连接器
+
+```text
+{{COMMON_PREFIX}}
+A short straight transition connector for the courtyard wall beside the monumental main gate of the same old secluded mountain temple. Exact target dimensions: 1.2 meters long along X, 0.60 meters deep along Z and 2.6 meters tall along Y. Front faces positive Z. This is a compact architectural connector, not a full wall run and not a gate building.
+
+The connector must reproduce the exact architectural cross-section of the accepted straight courtyard wall: one continuous low warm-gray weathered stone base, a pale aged plaster middle wall with subtle humid discoloration, one dark desaturated warm-brown timber cap, and one complete muted blue-green ceramic tiled top with restrained shallow eaves on both positive-Z and negative-Z sides. The tile top, timber cap, plaster body and stone base must each run continuously from the negative-X end plane to the positive-X end plane without tapering, missing layers or floating pieces.
+
+BOTH X ENDS MUST BE FLAT, VERTICAL, PARALLEL AND GEOMETRICALLY IDENTICAL. Every material layer must terminate flush on both end planes so one end can overlap slightly into the timber-and-plaster side bay of the existing gate and the other can overlap slightly into the existing ARCH-006 straight wall. Keep the silhouette sober, low and monastic, matching weathered dark timber, warm gray stone, pale old plaster and gray-green roof tiles already used by the temple. Use realistic PBR roughness, subtle moisture staining and very limited moss only near the base.
+
+ONE CONNECTOR MODULE ONLY. No gate door, gate frame, large column, freestanding post, staircase, floor slab, terrain, long surrounding wall, corner turn, doorway, window, railing, lantern, sign, text, logo, people, plants, statue, broken section, detached roof tile or floating ornament. Do not add a foundation platform wider than the wall body. Clean flat bottom contact plane, closed watertight production-ready geometry for Three.js.
 {{COMMON_SUFFIX}}
 ```
 
@@ -106,6 +186,18 @@ Original natural environment asset for a quiet East Asian mountain-temple cyber-
 ```text
 {{ENV_PREFIX}}
 A reusable slightly curved temple pond-bank module exactly 4 meters long along the X axis, 2 meters deep along the Z axis and no more than 0.6 meters high. The water-facing edge is positive Z and follows one smooth shallow concave curve; the dry courtyard side is negative Z and remains mostly straight. Build the bank from fitted warm-gray weathered stone slabs with a low natural rock lip, dark damp joints and subtle moss only close to the water line. BOTH X END CUTS MUST BE FLAT, VERTICAL, IDENTICAL AND COMPLETELY CLEAR so several copies can join end-to-end without gaps, caps, rocks or vegetation blocking the seam. The upper dry strip must remain walkable and nearly level. No water surface, no stream, no bridge, no railing, no lantern, no loose rock pile, no plants, no surrounding ground plane. This is one modular bank segment, not a complete pond or landscape diorama.
+{{COMMON_SUFFIX}}
+```
+
+### ENV-010 池塘莲花组合
+
+```text
+{{ENV_PREFIX}}
+A compact floating lotus cluster for the existing temple pond, approximately 1.6 meters wide along X, 1.2 meters deep along Z and no more than 0.45 meters tall above the water line. Create one natural asymmetrical composition containing one fully opened pale warm-pink lotus flower, one half-open flower, one upright closed bud, six to eight broad healthy lotus leaves in varied sizes and angles, and a few short curved stems descending just below the water line. The open flower must have layered individually modeled petals and a readable yellow seedpod center. Leaves should be muted deep jade green with subtle radial veins, slightly curled edges, realistic thickness, restrained wet sheen and a few natural imperfections.
+
+All visible leaves and flowers must form one compact reusable cluster with a nearly flat water-contact plane at Y=0. The lowest short stems may extend no more than 0.12 meters below that plane. Use realistic botanical proportions and high-quality PBR materials suitable for a close third-person view. Keep the silhouette calm, sparse and elegant rather than a dense bouquet.
+
+ONE LOTUS CLUSTER ONLY. No pond, no water surface or transparent water plane, no soil mound, no flower pot, no vase, no stone base, no wooden platform, no bridge, no fish, no insects, no lantern, no text, no logo, no people and no surrounding terrain. Do not add a rectangular support or floating display base. Production-ready closed geometry for Three.js.
 {{COMMON_SUFFIX}}
 ```
 
@@ -226,6 +318,60 @@ A single low rectangular meditation cushion exactly 0.9 meters wide, 0.75 meters
 {{COMMON_SUFFIX}}
 ```
 
+### PROP-012 实体念珠
+
+```text
+{{PROP_PREFIX}}
+One complete authentic Buddhist prayer-bead mala arranged as a relaxed oval loop on a flat surface, approximately 0.48 meters long, 0.34 meters wide and 0.055 meters high. Use exactly 108 small individually readable dark sandalwood beads threaded closely on one continuous cord, plus one slightly larger mother bead and a short restrained dark-umber silk tassel. Beads must be round but subtly hand-worn rather than perfectly plastic, with visible wood grain, small natural color variation and soft contact shadows between neighboring beads. The loop must lie naturally with mild irregularity and physical cord tension, suitable for placement on a low ritual table and for a subtle runtime rotation animation.
+
+One isolated complete mala only. No hand, person, wrist, statue, bowl, box, table, floor, text, symbols, glowing halo, jewelry metal, giant beads, extra necklace or background. No floating beads, broken cord, fused solid ring or flat painted texture. Clean bottom contact plane, all beads and tassel physically connected, high-quality PBR wood and woven-fiber materials, production-ready Three.js GLB.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-013 实体木鱼
+
+```text
+{{PROP_PREFIX}}
+One authentic medium temple wooden fish percussion instrument, approximately 0.58 meters wide, 0.42 meters deep and 0.38 meters tall, resting securely on one compact muted-rust circular brocade cushion. The wooden fish body is a single hollow carved dark reddish-brown hardwood form with the traditional rounded fish silhouette, a deep horizontal sounding slit, a clearly carved mouth, restrained scale and cloud relief, thick believable walls and a readable hollow interior at the slit. Use hand-rubbed lacquer with varied roughness, worn warm highlights on struck edges and visible carved wood grain. The cushion has believable woven fabric, piping and compression under the instrument.
+
+Instrument and cushion only. No mallet, hand, monk, table, floor, temple room, text, logo, painted eyes, cartoon face, glowing parts, plastic surface, second instrument or background. The front faces positive Z and the bottom of the cushion is a clean flat contact plane. Closed physically plausible geometry with a strong functional silhouette, high-quality PBR lacquered wood and fabric, production-ready Three.js GLB.
+{{COMMON_SUFFIX}}
+```
+
+### PROP-014 山门檐下灯笼
+
+```text
+{{PROP_PREFIX}}
+One complete authentic hanging lantern for the front eave of an aged East Asian mountain-temple gate, approximately 0.44 meters wide, 0.44 meters deep and 0.78 meters tall excluding the hanging cord. Use a restrained hexagonal dark-red lacquered timber frame with slim aged-brass corner fittings, a shallow blue-green patinated metal top cap, a small lower finial and six warm ivory rice-paper panels. The paper must be translucent and softly warm when lit from a runtime point light, but must not contain a visible bulb, flame, baked bloom or solid glowing ball. Include one short centered dark woven hanging loop integrated into the top cap. Subtle rain wear, soot-darkened upper edges, rubbed brass highlights and realistic PBR roughness variation should match an old humid mountain temple at night. Strong readable silhouette from front, side and below; all frame members and paper panels remain physically connected.
+
+Exactly one isolated hanging lantern only. No wall bracket, long chain, ceiling beam, temple building, floor, terrain, text, characters, tassel curtain, people, plants, second lantern, festival ornament, neon strip, giant glow, bright red plastic, glossy toy surface or background. Front faces positive Z, vertical axis is Y and the lantern is centered at the origin. Closed production-ready Three.js GLB with clean topology and high-quality PBR base-color and metallic-roughness textures.
+{{COMMON_SUFFIX}}
+```
+
 ## 验收时替换规则
 
 `{{COMMON_PREFIX}}` 和 `{{COMMON_SUFFIX}}` 在提交 API 前必须展开成完整文本；资产 ID 不发送给模型，只写入本地任务记录。
+
+## 角色品质升级
+
+## 主殿英雄资产
+
+### PROP-011 主殿佛像
+
+```text
+An original monumental seated Buddha statue created as the single ceremonial focal point of a quiet cyber-meditation hall. Respectful, serene and timeless rather than theatrical, kitsch or theme-park decoration. Approximately 2.9 meters wide, 1.75 meters deep and 4.1 meters tall including its pedestal, sized to stand on a 5.4 meter wide altar platform beneath a 6.7 meter roof. Calm symmetrical face with gently lowered eyes, clearly modeled eyelids, nose, lips and ears; natural cranial proportions and a restrained ushnisha silhouette. Both hands rest clearly in a stable meditation mudra above the crossed legs. Layered monastic robes wrap the shoulders, torso and seated legs with deep believable gravity folds, rolled cloth edges and readable thickness from front, side and back. The body must feel anatomically supported beneath the cloth, with no melted limbs, fused hands or hollow mask face.
+
+Use aged dark bronze as the primary PBR material, with subtle warm-gold rubbed highlights on the face, hands and high robe folds, restrained green patina in recesses, and a softly weathered lotus pedestal in matching bronze over a dark warm-gray stone plinth. Add only a few extremely thin recessed jade-green emissive lines following selected lotus seams and lower robe folds; they must read as quiet embedded data traces, not neon armor. Strong elegant silhouette, production-quality sculptural detail, realistic metal roughness variation and ambient-occlusion depth, readable under warm altar light and cool moonlight.
+
+Exactly one complete isolated statue with its lotus pedestal and low stone plinth. Front faces positive Z and the bottom is a clean flat contact plane centered at the origin. No temple, room, floor, background, altar table, incense, candles, offerings, monks, people, animals, text, symbols, logos, halo ring, floating parts, extra heads, extra arms, weapons, staff, jewelry overload, bright polished gold, glossy plastic, porcelain, marble-white skin or city neon. Do not copy a named real-world temple statue or a specific branded design. Closed watertight geometry, clean silhouette from all sides, high-quality PBR base-color and metallic-roughness textures, production-ready Three.js GLB.
+```
+
+### CHAR-001 小和尚基础角色
+
+```text
+An original full-body stylized young East Asian novice monk character for a quiet mountain-temple meditation world. High-quality feature-animation character design rather than a toy, mascot, primitive doll or game icon. Use a standard humanoid rig-compatible body at about 1.55 meters tall and roughly 5.5 heads high; the character can be scaled smaller later in the game. Keep a youthful gentle shaved head, short neck, narrow relaxed shoulders, compact torso, naturally proportioned hands and bare feet. Calm gentle face with subtle eyelids, small realistic ears, a restrained nose and mouth, warm natural skin with soft subsurface-like shading, no plastic shine and no exaggerated smile. Layered traditional robe construction: a fitted desaturated ochre-brown inner robe clearly following the torso and separated legs, plus a muted warm-umber outer kasaya crossing diagonally over the torso and ending close to the waist. Believable fabric thickness, stitched hems, soft gravity-driven folds and slight tonal wear at the lower edge. No glowing body, no jade skin and no cyber armor; only one tiny dark-jade cloth knot at the waist may echo the world palette.
+
+STRICT AUTO-RIG ELIGIBILITY IS THE HIGHEST PRIORITY. Neutral symmetric T-pose, standing upright and facing positive Z. Both arms extend sideways at 85 to 90 degrees from the torso, elbows nearly straight, wrists neutral, palms facing down, all five fingers readable. There must be clear empty air under both armpits and between both arms and the robe. The outer kasaya may drape over the chest and back but MUST NOT form any cloth bridge, cape triangle or web connecting an arm to the torso. Feet shoulder-width apart and flat on one clean ground plane. Both leg silhouettes, knees and ankles must remain individually readable; no robe surface may bridge across both legs below the crotch. Symmetrical base body with standard human shoulder, elbow, wrist, hip, knee and ankle positions, clean deformation-friendly limb silhouettes, closed watertight geometry and no floating cloth pieces. High-quality PBR skin and woven-cloth materials, production-ready Three.js GLB, readable from front, side and back.
+
+Exactly one isolated character. No pedestal, floor, environment, temple, halo, staff, beads, bowl, hat, shoes, text, logo, second person, extra arms, fused fingers, mitten hands, oversized baby head, spherical primitive body, glossy vinyl, porcelain, wax, stone or metallic skin. Do not use a poncho, cape, blanket, wing-like sleeve or one-piece skirt that hides the standard humanoid limb topology.
+```

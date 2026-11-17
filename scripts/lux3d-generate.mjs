@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createInterface } from "node:readline/promises";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const assetId = process.argv[2];
@@ -8,7 +9,13 @@ const shouldWait = process.argv.includes("--wait");
 const dryRun = process.argv.includes("--dry-run");
 const resumeIndex = process.argv.indexOf("--task-id");
 const resumeTaskId = resumeIndex >= 0 ? Number(process.argv[resumeIndex + 1]) : null;
-const apiKey = process.env.LUX3D_API_KEY;
+let apiKey = process.env.LUX3D_API_KEY;
+if (!apiKey && !dryRun && process.argv.includes("--key-stdin")) {
+  console.error("Ready for Lux3D API key on stdin (input is hidden).");
+  const input = createInterface({ input: process.stdin, output: process.stdout, terminal: false });
+  apiKey = (await input.question(""))?.trim();
+  input.close();
+}
 
 if (!assetId) throw new Error("Usage: node scripts/lux3d-generate.mjs ARCH-005 [--wait]");
 if (!apiKey && !dryRun) throw new Error("LUX3D_API_KEY is required");

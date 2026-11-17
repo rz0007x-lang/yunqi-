@@ -1,6 +1,7 @@
-import { TempleScene } from "./scene.js?v=pre-multiplayer-7";
-import { TempleAudio } from "./audio.js?v=pre-multiplayer-7";
-import { PresenceRoom } from "./presence.js?v=pre-multiplayer-7";
+import { TempleScene } from "./scene.js?v=forecourt-moon-fill-1";
+import { TempleAudio } from "./audio.js?v=gate-sidewall-integrated-1";
+import { PresenceRoom } from "./presence.js?v=atmosphere-hall-1";
+import { RitualObjectPreview } from "./ritual-preview.js?v=atmosphere-hall-1";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -26,9 +27,14 @@ const visitorCount = $("#visitor-count");
 const leaveSeat = $("#leave-seat");
 const arrival = $("#arrival");
 const soundToggle = $("#sound-toggle");
+const controlModeToggle = $("#control-mode-toggle");
+const cameraModeToggle = $("#camera-mode-toggle");
 const beadsDialog = $("#beads-dialog");
+const moktakDialog = $("#moktak-dialog");
 const meditateDialog = $("#meditate-dialog");
 const audio = new TempleAudio();
+const beadsPreview = new RitualObjectPreview({ canvas: $("#beads-preview"), kind: "beads" });
+const moktakPreview = new RitualObjectPreview({ canvas: $("#moktak-preview"), kind: "moktak" });
 let scene;
 let room;
 let noticeTimer;
@@ -37,6 +43,18 @@ let timerSeconds = 180;
 let timerRemaining = timerSeconds;
 let timerInterval;
 let timerRunning = false;
+let activeView = "gate";
+
+function renderControlState(state) {
+  if (!state) return;
+  const following = state.controlMode === "follow";
+  const cameraLabels = { first: "第一", third: "第三", overview: "远景" };
+  controlModeToggle.querySelector("b").textContent = following ? "跟随" : "观景";
+  controlModeToggle.classList.toggle("is-active", following);
+  controlModeToggle.setAttribute("aria-pressed", String(following));
+  cameraModeToggle.querySelector("b").textContent = cameraLabels[state.cameraMode] ?? "第三";
+  cameraModeToggle.classList.toggle("is-active", following);
+}
 
 function showNotice(message, duration = 3200) {
   notice.textContent = message;
@@ -45,17 +63,27 @@ function showNotice(message, duration = 3200) {
   noticeTimer = window.setTimeout(() => notice.classList.remove("is-visible"), duration);
 }
 
-function setSceneView(view, announce = true) {
-  scene?.setView(view);
+function applySceneView(view, announce = true) {
+  const previousView = activeView;
+  audio.transition(previousView, view);
   audio.setZone(view);
+  activeView = view;
   $$('[data-scene-view]').forEach((button) => button.classList.toggle("is-active", button.dataset.sceneView === view));
-  if (!announce) return;
   const messages = {
     gate: "山门之外，先把来处轻轻放下。",
     courtyard: "沿着灯火穿过云庭，水声与竹影都在这里。",
     hall: "大殿已开。点击发光的空坐垫选择位置。",
   };
+  if (!announce) {
+    notice.textContent = messages[view];
+    return;
+  }
   showNotice(messages[view], 4200);
+}
+
+function setSceneView(view, announce = true) {
+  scene?.setView(view);
+  applySceneView(view, announce);
 }
 
 function networkAction(action) {
@@ -64,14 +92,13 @@ function networkAction(action) {
   window.setTimeout(() => room.update({ action: null }), 500);
 }
 
-function openDialog(dialog) {
+function openDialog(dialog, preview) {
   if (!dialog.open) dialog.showModal();
+  preview?.show();
 }
 
 function updateBeads() {
   $("#beads-count").textContent = beads;
-  const angle = beads * 7.5;
-  $("#beads-ring").style.setProperty("--turn", `${angle}deg`);
   $("#beads-message").textContent = beads === 108 ? "一轮已满。愿你仍能轻轻回到此刻。" : beads > 72 ? "已经很接近一轮圆满。" : beads > 36 ? "不必赶路，念念分明。" : "每一次触碰，都只记在此刻。";
 }
 
@@ -81,11 +108,20 @@ async function turnBead() {
   localStorage.setItem("yunqi-beads", String(beads));
   updateBeads();
   audio.bead();
-  networkAction("gassho");
+  beadsPreview.turn();
+  scene?.turnPrayerBeads();
+  networkAction("beads");
   if (beads === 108) {
     audio.ringBell(true);
     showNotice("一百零八念已圆满。", 4500);
   }
+}
+
+function strikeMoktak() {
+  moktakPreview.strike();
+  networkAction("moktak");
+  audio.strikeWood();
+  showNotice("一声木鱼，只在你这里响起。", 2200);
 }
 
 function formatTime(total) {
@@ -166,12 +202,18 @@ async function initialize() {
       showNotice(`已在第 ${seat + 1} 枚坐垫入座。慢慢呼吸。`, 4200);
     },
     onSeatUnavailable: () => showNotice("这枚坐垫已有来客。旁边仍有空位。"),
+    onControlState: renderControlState,
+    onViewChange: (view) => applySceneView(view, false),
   });
   window.__YUNQI_DIAGNOSTICS__ = () => scene.getDiagnostics();
   document.documentElement.dataset.yunqiDiagnostics = JSON.stringify(scene.getDiagnostics());
 
   await scene.ready;
+  document.documentElement.dataset.yunqiDiagnostics = JSON.stringify(scene.getDiagnostics());
+  beadsPreview.load();
+  moktakPreview.load();
   setSceneView("gate", false);
+  renderControlState(scene.getControlState());
 
   room = new PresenceRoom(profile);
   room.subscribe(({ self, peers }) => {
@@ -195,7 +237,7 @@ $("#enter-button").addEventListener("click", async () => {
   soundToggle.setAttribute("aria-pressed", String(audio.enabled));
   window.setTimeout(() => arrival.remove(), 520);
   audio.ringBell(true);
-  setSceneView("courtyard");
+  showNotice("点击石径，让小和尚从山门外一步步走入云庭。", 5200);
 });
 
 $$('[data-scene-view]').forEach((button) => button.addEventListener("click", () => setSceneView(button.dataset.sceneView)));
@@ -208,6 +250,19 @@ soundToggle.addEventListener("click", async () => {
   if (enabled) audio.ringBell(true);
 });
 
+controlModeToggle.addEventListener("click", () => {
+  const state = scene?.toggleControlMode();
+  renderControlState(state);
+  showNotice(state?.controlMode === "follow" ? "跟随模式：点击地面移动，拖动改变观察方向。" : "观景模式：拖动可360°环视，滚轮调整远近。", 3600);
+});
+
+cameraModeToggle.addEventListener("click", () => {
+  const state = scene?.cycleCameraMode();
+  renderControlState(state);
+  const messages = { first: "已切换第一人称视角。", third: "已切换第三人称跟随。", overview: "已切换高位远景。" };
+  if (state) showNotice(messages[state.cameraMode], 2600);
+});
+
 leaveSeat.addEventListener("click", () => {
   scene.leaveSeat();
   room.update({ seat: null, action: null });
@@ -217,21 +272,24 @@ leaveSeat.addEventListener("click", () => {
 
 $$('[data-action]').forEach((button) => button.addEventListener("click", () => {
   const action = button.dataset.action;
-  if (action === "beads") { updateBeads(); openDialog(beadsDialog); return; }
+  if (action === "beads") { networkAction("beads"); updateBeads(); openDialog(beadsDialog, beadsPreview); return; }
+  if (action === "moktak") { networkAction("moktak"); openDialog(moktakDialog, moktakPreview); return; }
   if (action === "meditate") { openDialog(meditateDialog); return; }
   networkAction(action);
-  if (action === "moktak") {
-    audio.strikeWood();
-    showNotice("一声木鱼，只在你这里响起。", 2200);
-  } else if (action === "gassho") showNotice("你向大殿中的来客合掌致意。", 2500);
+  if (action === "gassho") showNotice("你向大殿中的来客合掌致意。", 2500);
   else if (action === "bow") showNotice("放低一点，也许会看见新的方向。", 2800);
 }));
 
 $$('[data-close-dialog]').forEach((button) => button.addEventListener("click", () => button.closest("dialog").close()));
 $("#beads-turn").addEventListener("click", turnBead);
-$("#beads-ring").addEventListener("click", turnBead);
-$("#beads-ring").addEventListener("keydown", (event) => {
+$("#beads-preview").addEventListener("preview-activate", turnBead);
+$("#beads-preview").addEventListener("keydown", (event) => {
   if (event.key === "Enter" || event.key === " ") { event.preventDefault(); turnBead(); }
+});
+$("#moktak-strike").addEventListener("click", strikeMoktak);
+$("#moktak-preview").addEventListener("preview-activate", strikeMoktak);
+$("#moktak-preview").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); strikeMoktak(); }
 });
 $("#timer-toggle").addEventListener("click", toggleTimer);
 $$('[data-minutes]').forEach((button) => button.addEventListener("click", () => setTimer(Number(button.dataset.minutes))));

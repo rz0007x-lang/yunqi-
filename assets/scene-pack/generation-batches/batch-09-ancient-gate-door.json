@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-ancient-gate-door-09",
+  "goal": "生成一版古庙质感的山门门扇候选，仅供确认，不自动替换正式场景",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "generate-preview-confirm-before-integration",
+  "tasks": [
+    {
+      "asset_id": "ARCH-014",
+      "name": "古庙山门单扇木门候选",
+      "face_target": 70000,
+      "prompt_section": "ARCH-014 古庙山门单扇木门",
+      "status": "integrated_and_verified",
+      "provider_task_id": 7998182,
+      "source": "assets/scene-pack/source/ARCH-014/ARCH-014.glb",
+      "source_check": {
+        "bytes": 10442576,
+        "triangles": 66216,
+        "bounds_m": [2.0, 2.582, 0.532],
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2
+      },
+      "lod1": {"bytes": 1255148, "triangles": 43702},
+      "lod2": {"bytes": 378428, "triangles": 25162},
+      "runtime_behavior": "mirror into two pivoted leaves; close at gate and open in courtyard or hall; sink generated base strip 0.15 m into the existing threshold"
+    }
+  ],
+  "final_status": "completed_and_verified_locally"
+}

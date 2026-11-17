@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-interactive-ritual-assets-08",
+  "goal": "连续完成可闭合山门、实体念珠和实体木鱼，并直接接入本地场景",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "parallel-assets-auto-integration",
+  "tasks": [
+    {
+      "asset_id": "ARCH-013",
+      "name": "山门单扇木门",
+      "face_target": 52000,
+      "prompt_section": "ARCH-013 山门单扇木门",
+      "status": "integrated",
+      "provider_task_id": 7995325,
+      "source": "assets/scene-pack/source/ARCH-013/ARCH-013.glb",
+      "source_check": {"bytes": 8406272, "triangles": 48062, "bounds_m": [2.0, 3.048, 0.243]},
+      "lod1": {"bytes": 7049180, "triangles": 31720},
+      "lod2": {"bytes": 6977936, "triangles": 18262},
+      "runtime_behavior": "clone and mirror into two pivoted leaves; close in gate view and open when entering",
+      "review": "solid timber planks, rails, bronze studs and hinge straps; mirrored pair closes the gate opening without gaps"
+    },
+    {
+      "asset_id": "PROP-012",
+      "name": "实体念珠",
+      "face_target": 56000,
+      "prompt_section": "PROP-012 实体念珠",
+      "status": "integrated",
+      "provider_task_id": 7995324,
+      "source": "assets/scene-pack/source/PROP-012/PROP-012.glb",
+      "source_check": {"bytes": 12131732, "triangles": 61056, "bounds_m": [0.32, 0.473, 0.078]},
+      "lod1": {"bytes": 10240456, "triangles": 43960},
+      "lod2": {"bytes": 10120860, "triangles": 25642},
+      "runtime_behavior": "hang on a physical hall stand; bottom action opens the actual GLB in an interactive viewer and every bead turn rotates both preview and hall model",
+      "review": "individual sandalwood beads, mother bead, continuous cord and tassel are readable"
+    },
+    {
+      "asset_id": "PROP-013",
+      "name": "实体木鱼",
+      "face_target": 52000,
+      "prompt_section": "PROP-013 实体木鱼",
+      "status": "integrated",
+      "provider_task_id": 7995323,
+      "part_split_task_id": 7995499,
+      "source": "assets/scene-pack/source/PROP-013/PROP-013-runtime-source.glb",
+      "source_check": {"bytes": 11182304, "triangles": 46310, "bounds_m": [0.32, 0.248, 0.317]},
+      "lod1": {"bytes": 9875008, "triangles": 32412},
+      "lod2": {"bytes": 9793532, "triangles": 18520},
+      "runtime_behavior": "place in the hall; bottom action opens the actual GLB in an interactive viewer and animates the split native mallet in sync with sound",
+      "review": "hollow carved fish body, sounding slit, lacquered wood, compressed brocade cushion and separate native mallet"
+    }
+  ],
+  "final_status": "completed_and_verified_locally",
+  "verified_views": ["closed gate", "open gate state", "hall ritual props", "108-bead dialog"],
+  "acceptance": [
+    "door leaf reads as solid movable timber construction and forms a clean mirrored pair",
+    "prayer beads read as individual wooden beads on a continuous physical cord",
+    "wooden fish reads as a hollow carved instrument rather than a toy or icon",
+    "all three assets use consistent restrained temple PBR materials",
+    "gate opening, bead turn and wooden-fish strike remain functional"
+  ]
+}

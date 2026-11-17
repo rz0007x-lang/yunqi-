@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-gate-wall-connector-12",
+  "goal": "生成替代程序化短墙的山门与 ARCH-006 围墙专用连接器",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "generate-review-integrate",
+  "tasks": [
+    {
+      "asset_id": "ARCH-017",
+      "name": "山门围墙短连接器",
+      "face_target": 40000,
+      "prompt_section": "ARCH-017 山门围墙短连接器",
+      "status": "integrated",
+      "last_attempt_date": "2026-11-15",
+      "provider_task_id": 8005591,
+      "last_attempt_result": "Generation succeeded; source reviewed from front and side, LOD2 generated, and two instances integrated into the gate facade",
+      "source_metrics": {
+        "triangles": 56232,
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2,
+        "bounds_m": [3.108, 2.8, 1.572]
+      },
+      "runtime_metrics": {
+        "lod1_triangles": 36550,
+        "lod2_triangles": 20242,
+        "lod1_bytes": 619744,
+        "lod2_bytes": 309184
+      },
+      "target_dimensions_m": [1.2, 2.6, 0.6],
+      "placement_plan": {
+        "left_center": [-4.96, 0, 25.2],
+        "right_center": [4.96, 0, 25.2],
+        "rotation_y": 0,
+        "overlap_m": 0.15
+      }
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "both X end planes are flat and identical",
+      "stone base, plaster body, timber cap and tiled top reach both ends",
+      "dimensions normalize to 1.2 by 2.6 by 0.6 meters without damaging the silhouette",
+      "materials match ARCH-006 and the weathered ARCH-016 gate",
+      "no surrounding terrain, door, column, text, people or floating parts"
+    ],
+    "on_pass": "generate LOD2, place two instances with slight overlap into gate and straight wall, then browser-review the seam",
+    "on_fail": "revise ARCH-017 only and regenerate"
+  },
+  "next_action": "complete; retain source ZIP locally and ship the LOD2 runtime asset"
+}

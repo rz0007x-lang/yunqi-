@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-stone-gate-door-10",
+  "goal": "生成与云栖现有石阶、石桥和庭院地砖一致的暖灰青石山门候选，仅供确认",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "generate-preview-confirm-before-integration",
+  "tasks": [
+    {
+      "asset_id": "ARCH-015",
+      "name": "山中古庙暖灰青石门候选",
+      "face_target": 70000,
+      "prompt_section": "ARCH-015 山中古庙石门单扇",
+      "status": "rejected_user_preferred_arch_014_wood_door",
+      "provider_task_id": 7998491,
+      "source": "assets/scene-pack/source/ARCH-015/ARCH-015.glb",
+      "source_check": {
+        "bytes": 10675176,
+        "triangles": 71352,
+        "bounds_m": [2.096, 3.0, 0.626],
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2
+      }
+    }
+  ],
+  "final_status": "rejected_not_integrated"
+}

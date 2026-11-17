@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-pond-lotus-13",
+  "goal": "为云庭池塘生成可复用的实体莲花组合",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "generate-review-integrate",
+  "tasks": [
+    {
+      "asset_id": "ENV-010",
+      "name": "池塘莲花组合",
+      "face_target": 45000,
+      "prompt_section": "ENV-010 池塘莲花组合",
+      "status": "integrated",
+      "provider_task_id": 8006545,
+      "source_metrics": {
+        "triangles": 57960,
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2,
+        "bounds_m": [0.65, 0.469, 0.609]
+      },
+      "runtime_metrics": {
+        "lod1_triangles": 39412,
+        "lod2_triangles": 24342,
+        "lod1_bytes": 597036,
+        "lod2_bytes": 320888
+      },
+      "target_dimensions_m": [1.6, 0.45, 1.2],
+      "placement_plan": {
+        "pond_center": [8.6, 0.09, 14.5],
+        "instance_count": 3,
+        "avoid_bridge_clearance_m": 1.1
+      }
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "flowers and leaves are botanically readable from front and top views",
+      "the cluster has no water plane, pot, rectangular base or surrounding terrain",
+      "the water-contact plane is nearly flat and stems do not hang deeply",
+      "materials match the subdued jade and warm-pink courtyard palette",
+      "LOD2 preserves the open flower and leaf silhouette"
+    ],
+    "on_pass": "generate LOD2 and place three rotated instances away from the bridge route",
+    "on_fail": "revise ENV-010 only and regenerate"
+  },
+  "next_action": "complete; retain source ZIP locally and ship the LOD2 runtime asset"
+}

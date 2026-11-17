@@ -78,6 +78,75 @@ export class TempleAudio {
     oscillator.stop(now + 0.1);
   }
 
+  transition(from, to) {
+    if (!this.enabled || !this.context || from === to) return;
+    if (from === "gate" && to === "courtyard") {
+      this.gateCreak();
+      this.footsteps(7, 0.48);
+    } else if (from === "courtyard" && to === "hall") {
+      this.footsteps(6, 0.42);
+      window.setTimeout(() => this.ringBell(true), 1650);
+    } else if (from === "hall" && to === "courtyard") {
+      this.footsteps(5, 0.44);
+    }
+  }
+
+  gateCreak() {
+    if (!this.enabled || !this.context) return;
+    const now = this.context.currentTime;
+    const oscillator = this.context.createOscillator();
+    const filter = this.context.createBiquadFilter();
+    const gain = this.context.createGain();
+    const pan = this.context.createStereoPanner();
+    oscillator.type = "sawtooth";
+    oscillator.frequency.setValueAtTime(72, now);
+    oscillator.frequency.exponentialRampToValueAtTime(43, now + 1.35);
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(430, now);
+    filter.frequency.exponentialRampToValueAtTime(180, now + 1.35);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.026, now + 0.18);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.45);
+    pan.pan.value = -0.1;
+    oscillator.connect(filter).connect(gain).connect(pan).connect(this.master);
+    oscillator.start(now);
+    oscillator.stop(now + 1.5);
+
+    const grain = this.context.createBufferSource();
+    const grainFilter = this.context.createBiquadFilter();
+    const grainGain = this.context.createGain();
+    grain.buffer = this.noiseBuffer;
+    grainFilter.type = "bandpass";
+    grainFilter.frequency.value = 290;
+    grainFilter.Q.value = 0.8;
+    grainGain.gain.setValueAtTime(0.018, now);
+    grainGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+    grain.connect(grainFilter).connect(grainGain).connect(pan);
+    grain.start(now, 0, 1.25);
+  }
+
+  footsteps(count = 6, spacing = 0.45) {
+    if (!this.enabled || !this.context || !this.noiseBuffer) return;
+    const now = this.context.currentTime + 0.16;
+    for (let index = 0; index < count; index += 1) {
+      const at = now + index * spacing;
+      const source = this.context.createBufferSource();
+      const filter = this.context.createBiquadFilter();
+      const gain = this.context.createGain();
+      const pan = this.context.createStereoPanner();
+      source.buffer = this.noiseBuffer;
+      filter.type = "bandpass";
+      filter.frequency.value = 145 + (index % 3) * 26;
+      filter.Q.value = 0.9;
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(0.032, at + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.19);
+      pan.pan.value = index % 2 ? 0.16 : -0.16;
+      source.connect(filter).connect(gain).connect(pan).connect(this.master);
+      source.start(at, (index * 0.17) % 1.4, 0.22);
+    }
+  }
+
   setZone(zone) {
     if (!["gate", "courtyard", "hall"].includes(zone)) return;
     this.zone = zone;
@@ -90,7 +159,7 @@ export class TempleAudio {
     }[zone];
     [[this.windGain, levels.wind], [this.waterGain, levels.water], [this.hallGain, levels.hall]].forEach(([gain, value]) => {
       gain.gain.cancelScheduledValues(now);
-      gain.gain.setTargetAtTime(value, now, 1.4);
+      gain.gain.setTargetAtTime(value, now, 1.85);
     });
   }
 
@@ -138,28 +207,33 @@ export class TempleAudio {
     const buffer = this.context.createBuffer(1, this.context.sampleRate * 2, this.context.sampleRate);
     const data = buffer.getChannelData(0);
     for (let index = 0; index < data.length; index += 1) data[index] = Math.random() * 2 - 1;
+    this.noiseBuffer = buffer;
     const noise = this.context.createBufferSource();
     const noiseFilter = this.context.createBiquadFilter();
+    const windPan = this.context.createStereoPanner();
     this.windGain = this.context.createGain();
     noise.buffer = buffer;
     noise.loop = true;
     noiseFilter.type = "bandpass";
     noiseFilter.frequency.value = 620;
     noiseFilter.Q.value = 0.35;
+    windPan.pan.value = -0.35;
     this.windGain.gain.value = 0.04;
-    noise.connect(noiseFilter).connect(this.windGain).connect(this.master);
+    noise.connect(noiseFilter).connect(this.windGain).connect(windPan).connect(this.master);
     noise.start();
 
     const waterNoise = this.context.createBufferSource();
     const waterFilter = this.context.createBiquadFilter();
+    const waterPan = this.context.createStereoPanner();
     this.waterGain = this.context.createGain();
     waterNoise.buffer = buffer;
     waterNoise.loop = true;
     waterFilter.type = "lowpass";
     waterFilter.frequency.value = 1050;
     waterFilter.Q.value = 0.65;
+    waterPan.pan.value = 0.6;
     this.waterGain.gain.value = 0.006;
-    waterNoise.connect(waterFilter).connect(this.waterGain).connect(this.master);
+    waterNoise.connect(waterFilter).connect(this.waterGain).connect(waterPan).connect(this.master);
     waterNoise.start();
     this.setZone(this.zone);
   }

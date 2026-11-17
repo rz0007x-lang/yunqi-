@@ -13,3 +13,23 @@ assets/scene-pack/source/PROP-*/
 assets/scene-pack/runtime/lod1/ENV-*/
 assets/scene-pack/runtime/lod1/PROP-*/
 dist/assets/scene-pack/
+
+# These two assets are required by scripts/build.mjs.
+!assets/scene-pack/source/PROP-014/
+assets/scene-pack/source/PROP-014/*
+!assets/scene-pack/source/PROP-014/PROP-014.glb
+!assets/scene-pack/runtime/lod1/PROP-011/
+assets/scene-pack/runtime/lod1/PROP-011/*
+!assets/scene-pack/runtime/lod1/PROP-011/PROP-011.glb
+
+# Local credentials, caches and generated submission media are not source code.
+.env
+.env.*
+!.env.example
+tmp/
+__pycache__/
+submission/*
+!submission/*.md
+!submission/*.py
+!submission/*.cjs
+!submission/*.srt

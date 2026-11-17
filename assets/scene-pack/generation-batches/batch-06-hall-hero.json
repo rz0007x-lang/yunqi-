@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-hall-hero-06",
+  "goal": "逐项确认品质升级，第二项只生成主殿佛像候选",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "single-asset-user-confirmation-gate",
+  "tasks": [
+    {
+      "asset_id": "PROP-011",
+      "name": "主殿佛像候选",
+      "face_target": 80000,
+      "prompt_section": "PROP-011 主殿佛像",
+      "status": "awaiting_scene_confirmation",
+      "provider_task_id": 7874165,
+      "structural_check": {
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2,
+        "triangles": 73722,
+        "bounds_m": [0.34, 0.42, 0.351],
+        "bytes": 13943560,
+        "animations": 0,
+        "lod1_triangles": 53078,
+        "lod1_bytes": 1907656,
+        "lod2_triangles": 30962,
+        "lod2_bytes": 638960
+      },
+      "visual_review": {
+        "front": "serene readable face, intact meditation mudra, crossed legs and two-level lotus pedestal",
+        "side": "stable seated center of gravity, readable body and pedestal depth",
+        "back": "complete robe surface and pedestal; not a front-only shell",
+        "deviation": "jade emissive traces are visually absent or too subtle; candidate reads primarily as aged bronze"
+      }
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "serene readable face without wax or toy appearance",
+      "correct meditation mudra with intact fingers and crossed legs",
+      "layered robe thickness and deep sculptural folds",
+      "stable lotus pedestal and flat stone contact plane",
+      "aged bronze and restrained jade traces without neon overload",
+      "one isolated statue without temple, altar props, text or halo"
+    ],
+    "on_pass": "show the local hall replacement before publishing or advancing to the roof",
+    "on_fail": "revise only PROP-011 and regenerate; do not advance to roof or door"
+  }
+}

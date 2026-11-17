@@ -90,7 +90,32 @@
       }
 
       new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(assetUrl, (gltf) => {
-        const model = gltf.scene;
+        let model = gltf.scene;
+        if (params.get('pair') === 'mirror') {
+          const sourceBounds = new THREE.Box3().setFromObject(model);
+          const sourceSize = sourceBounds.getSize(new THREE.Vector3());
+          const leafWidth = Number(params.get('leafWidth')) || sourceSize.x;
+          const leafHeight = Number(params.get('leafHeight')) || sourceSize.y;
+          const leafDepth = Number(params.get('leafDepth')) || sourceSize.z;
+          const scaleX = leafWidth / sourceSize.x;
+          const scaleY = leafHeight / sourceSize.y;
+          const scaleZ = leafDepth / sourceSize.z;
+          const pair = new THREE.Group();
+          const mirrored = model.clone(true);
+          model.scale.set(scaleX, scaleY, scaleZ);
+          model.position.x = -leafWidth / 2;
+          mirrored.position.x = leafWidth / 2;
+          mirrored.scale.set(-scaleX, scaleY, scaleZ);
+          pair.add(model, mirrored);
+          model = pair;
+          document.querySelector('#asset').innerHTML += ' · <strong>镜像双扇预览</strong>';
+        }
+        const soloNode = params.get('soloNode');
+        const hiddenNodes = new Set((params.get('hideNodes') || '').split(',').filter(Boolean).map(Number));
+        model.children.forEach((child, index) => {
+          if (soloNode !== null) child.visible = index === Number(soloNode);
+          if (hiddenNodes.has(index)) child.visible = false;
+        });
         scene.add(model);
         model.traverse((object) => {
           if (!object.isMesh) return;

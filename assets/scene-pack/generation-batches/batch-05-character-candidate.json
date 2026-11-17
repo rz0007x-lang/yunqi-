@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-character-quality-05",
+  "goal": "逐项确认品质升级，第一项只生成小和尚基础角色候选",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "single-asset-user-confirmation-gate",
+  "tasks": [
+    {
+      "asset_id": "CHAR-001",
+      "name": "小和尚基础角色候选",
+      "face_target": 70000,
+      "prompt_section": "CHAR-001 小和尚基础角色",
+      "status": "integrated_user_approved",
+      "provider_task_id": 7831856,
+      "attempts": [
+        {
+          "provider_task_id": 7791368,
+          "visual_status": "user_approved",
+          "rig_task_id": 7822139,
+          "rig_status": "failed",
+          "rig_error": "RIG_ELIGIBILITY_FAILED",
+          "resolution": "regenerate with standard humanoid proportions, strict T-pose, clear armpits and separated leg silhouette"
+        },
+        {
+          "provider_task_id": 7831856,
+          "visual_status": "rig_compatible_candidate_accepted_for_pipeline",
+          "lod1_triangles": 41306,
+          "lod2_triangles": 25316,
+          "compressed_lod1_rig_task_id": 7836093,
+          "compressed_lod1_rig_status": "failed",
+          "compressed_lod1_rig_error": "RIG_ELIGIBILITY_FAILED",
+          "resolution": "rig the uncompressed source before Meshopt runtime compression"
+        },
+        {
+          "rig_task_id": 7844757,
+          "rig_status": "succeeded",
+          "joints": 52,
+          "retarget_task_id": 7848755,
+          "retarget_status": "succeeded",
+          "animations": ["Idle_Loop", "Walk_Loop", "Sitting_Enter", "Sitting_Idle_Loop", "Sitting_Exit"],
+          "scene_status": "integrated_locally_awaiting_user_confirmation"
+        }
+      ],
+      "structural_check": {
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2,
+        "triangles": 66624,
+        "bounds_m": [1.4, 1.4, 0.305],
+        "joints": 52,
+        "animations": 5,
+        "runtime_lod1_bytes": 727452
+      }
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "not a primitive doll, toy or glossy vinyl mascot",
+      "calm readable face and believable skin shading",
+      "layered cloth thickness, folds and stitched hems",
+      "clean A-pose with separated arms, fingers and legs",
+      "single isolated character without props or pedestal"
+    ],
+    "on_pass": "show the local hall replacement to the user before publishing or starting the Buddha statue",
+    "on_fail": "revise only CHAR-001 and regenerate; do not advance to Buddha statue"
+  }
+}

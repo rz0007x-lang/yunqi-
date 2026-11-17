@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-gate-lantern-14",
+  "goal": "为山门生成可复用的古庙檐下实体灯笼",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "generate-review-integrate",
+  "tasks": [
+    {
+      "asset_id": "PROP-014",
+      "name": "山门檐下灯笼",
+      "face_target": 32000,
+      "prompt_section": "PROP-014 山门檐下灯笼",
+      "status": "integrated_source_lod",
+      "provider_task_id": 8062227,
+      "source_metrics": {
+        "bytes": 10551608,
+        "triangles": 32460,
+        "meshes": 1,
+        "materials": 1,
+        "textures": 2,
+        "bounds_m": [0.376, 0.55, 0.35]
+      },
+      "target_dimensions_m": [0.44, 0.78, 0.44],
+      "placement_plan": {
+        "instance_count": 2,
+        "positions_m": [[-3.18, 4.66, 27.35], [3.18, 4.66, 27.35]],
+        "runtime_light": "warm point light per instance"
+      }
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "one isolated hanging lantern with no building or terrain",
+      "temple craft reads as timber, aged brass and translucent paper",
+      "silhouette is complete from front, side and below",
+      "no text, festival graphics, visible flame or baked giant glow",
+      "LOD2 preserves the frame, paper panels and lower finial"
+    ],
+    "on_pass": "generate LOD2 and replace the procedural gate lantern bodies",
+    "on_fail": "revise PROP-014 only and regenerate"
+  },
+  "next_action": "visually confirm the integrated pair, then create compressed LOD2 when native gltfpack is available"
+}

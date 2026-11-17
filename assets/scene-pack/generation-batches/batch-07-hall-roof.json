@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-hall-roof-07",
+  "goal": "逐项确认品质升级，第三项只生成主殿闭合屋顶候选",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "single-asset-user-confirmation-gate",
+  "tasks": [
+    {
+      "asset_id": "ARCH-012",
+      "name": "主殿闭合屋顶候选",
+      "face_target": 80000,
+      "prompt_section": "ARCH-012 主殿闭合屋顶",
+      "status": "integrated",
+      "attempts": [
+        {
+          "provider_task_id": 7978695,
+          "status": "rejected",
+          "structural_check": {
+            "meshes": 1,
+            "materials": 1,
+            "textures": 2,
+            "triangles": 98696,
+            "bounds_m": [0.45, 0.395, 0.435]
+          },
+          "review": "watertight and complete, but generated a four-slope cross-ridge pavilion roof instead of the required two-slope longitudinal gable roof"
+        },
+        {
+          "provider_task_id": 7985856,
+          "status": "candidate_after_part_split",
+          "part_split_task_id": 7992484,
+          "structural_check": {
+            "meshes": 7,
+            "materials": 7,
+            "textures": 2,
+            "triangles": 95486,
+            "bounds_m": [4.5, 3.163, 4.511],
+            "bytes": 14326732
+          },
+          "runtime_filter": {
+            "hide_top_level_node": 2,
+            "reason": "split node 2 contains the unintended long support posts and column cage; remaining nodes retain both roof planes, ridge, fascia and connected underside members"
+          },
+          "review": "user accepted the two-slope longitudinal gable topology; the unintended support posts are independently removable"
+        }
+      ],
+      "accepted_source": {
+        "path": "assets/scene-pack/source/ARCH-012/ARCH-012-clean.glb",
+        "removed_top_level_node": 2,
+        "reason": "remove the four unintended long support posts while retaining the complete roof shell"
+      },
+      "runtime_lods": {
+        "lod1": {
+          "path": "assets/scene-pack/runtime/lod1/ARCH-012/ARCH-012.glb",
+          "bytes": 2218124,
+          "triangles": 64928
+        },
+        "lod2": {
+          "path": "assets/scene-pack/runtime/lod2/ARCH-012/ARCH-012.glb",
+          "bytes": 891128,
+          "triangles": 42698
+        }
+      },
+      "scene_integration": {
+        "status": "integrated_locally",
+        "target_dimensions_m": [16.8, 3.0, 18.4],
+        "eave_y_m": 7.02,
+        "center_z_m": -0.8,
+        "material_tint": "#5f7d72",
+        "verified_views": ["gate", "courtyard", "hall"],
+        "next_gate": "passed; continued to the closable entrance door and physical ritual props"
+      }
+    }
+  ],
+  "review_gate": {
+    "checks": [
+      "both roof slopes are present and symmetric across the central ridge",
+      "top view has no open half, missing tile rows or daylight gaps",
+      "front and rear gable verge lines are complete",
+      "underside rafters span both slopes and connect to fascia",
+      "roof-only isolated asset without columns, walls, floor or temple body",
+      "muted blue-green tiles and dark timber match the existing main hall"
+    ],
+    "on_pass": "generate LOD, integrate the hall overlay, and show gate, courtyard and hall views for scene confirmation",
+    "on_fail": "revise only ARCH-012 and regenerate; do not advance to the closable entrance door"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "batch_id": "yunqi-integrated-gate-building-11",
+  "goal": "生成门身、门框、双扇门、斗拱与屋顶风格统一的一体式古庙山门，并拆分门扇保留开合",
+  "provider": "aholo-lux3d",
+  "model": "G1-Turbo",
+  "style": "photorealistic",
+  "enable_pbr": true,
+  "output_formats": ["zip", "glb"],
+  "execution": "generate-part-split-preview-integrate",
+  "tasks": [
+    {
+      "asset_id": "ARCH-016",
+      "name": "古庙一体式带门山门建筑",
+      "face_target": 100000,
+      "prompt_section": "ARCH-016 古庙一体式山门建筑",
+      "status": "integrated",
+      "provider_task_id": 7999095,
+      "source_glb": "assets/scene-pack/source/ARCH-016/ARCH-016.glb",
+      "split_source_glb": "assets/scene-pack/source/ARCH-016/ARCH-016-split.glb",
+      "runtime_lod1": "assets/scene-pack/runtime/lod1/ARCH-016/ARCH-016.glb",
+      "runtime_lod2": "assets/scene-pack/runtime/lod2/ARCH-016/ARCH-016.glb"
+    }
+  ],
+  "final_status": "integrated_and_verified"
+}

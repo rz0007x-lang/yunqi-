@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#07120f" />
     <meta name="description" content="云栖电子禅堂——一个不必说话，也能与陌生人安静共处的线上空间。" />
     <title>云栖 · 电子禅堂</title>
-    <link rel="stylesheet" href="/src/style.css?v=courtyard-1" />
+    <link rel="stylesheet" href="/src/style.css?v=rig-ritual-actions-2" />
     <script type="importmap">
       {
         "imports": {
@@ -53,11 +53,14 @@
           <div><small>你的法号</small><strong id="visitor-name">正在生成</strong></div>
         </aside>
 
-        <aside class="guide glass">
-          <span>拖动云庭与大殿查看</span>
-          <i></i>
-          <span>进入大殿后选座</span>
-        </aside>
+        <nav class="control-panel glass" aria-label="角色与视角控制">
+          <button id="control-mode-toggle" type="button" aria-pressed="true">
+            <small>操控</small><b>跟随</b>
+          </button>
+          <button id="camera-mode-toggle" type="button">
+            <small>视角</small><b>第三</b>
+          </button>
+        </nav>
 
         <nav class="scene-nav glass" aria-label="场景导航">
           <button class="is-active" data-scene-view="gate" type="button"><span>01</span>山门</button>
@@ -77,15 +80,29 @@
 
         <button id="leave-seat" class="leave-seat glass" type="button" hidden>起身</button>
 
-        <dialog id="beads-dialog" class="ritual-dialog">
+        <dialog id="beads-dialog" class="ritual-dialog ritual-dialog--object">
           <button class="dialog-close" data-close-dialog type="button" aria-label="关闭">×</button>
           <p class="dialog-kicker">一念一珠</p>
           <h2>转动念珠</h2>
-          <div id="beads-ring" class="beads-ring" role="button" tabindex="0" aria-label="点击或滑动念珠">
-            <div class="beads-center"><strong id="beads-count">0</strong><small>/ 108</small></div>
+          <div class="ritual-object-stage" data-preview-state="loading">
+            <canvas id="beads-preview" role="button" tabindex="0" aria-label="真实三维念珠，可拖动旋转或点击转动一珠"></canvas>
+            <span class="ritual-object-loading">正在呈现真实念珠……</span>
+            <div class="ritual-object-count"><strong id="beads-count">0</strong><small>/ 108</small></div>
           </div>
           <p id="beads-message">每一次触碰，都只记在此刻。</p>
           <button id="beads-turn" class="primary-button" type="button">转动一珠</button>
+        </dialog>
+
+        <dialog id="moktak-dialog" class="ritual-dialog ritual-dialog--object">
+          <button class="dialog-close" data-close-dialog type="button" aria-label="关闭">×</button>
+          <p class="dialog-kicker">一声一息</p>
+          <h2>敲击木鱼</h2>
+          <div class="ritual-object-stage" data-preview-state="loading">
+            <canvas id="moktak-preview" role="button" tabindex="0" aria-label="真实三维木鱼，可拖动旋转或点击敲击"></canvas>
+            <span class="ritual-object-loading">正在呈现真实木鱼……</span>
+          </div>
+          <p>木槌落下时，只听这一声。</p>
+          <button id="moktak-strike" class="primary-button" type="button">敲击木鱼</button>
         </dialog>
 
         <dialog id="meditate-dialog" class="ritual-dialog ritual-dialog--timer">
@@ -109,6 +126,6 @@
         </section>
       </section>
     </main>
-    <script type="module" src="/src/main.js?v=pre-multiplayer-7"></script>
+    <script type="module" src="/src/main.js?v=forecourt-moon-fill-1"></script>
   </body>
 </html>

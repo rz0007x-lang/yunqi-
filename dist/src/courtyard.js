@@ -10,11 +10,12 @@ const ASSET_URLS = {
   wallCorner: new URL("../assets/scene-pack/runtime/lod2/ARCH-007/ARCH-007.glb", import.meta.url).href,
   sideGate: new URL("../assets/scene-pack/runtime/lod2/ARCH-008/ARCH-008.glb", import.meta.url).href,
   pavilion: new URL("../assets/scene-pack/runtime/lod2/ARCH-009/ARCH-009.glb", import.meta.url).href,
-  bridge: new URL("../assets/scene-pack/runtime/lod2/ARCH-010/ARCH-010.glb", import.meta.url).href,
+  bridge: new URL("../assets/scene-pack/runtime/lod2/ARCH-010/ARCH-010.glb?v=bridge-original-restored-1", import.meta.url).href,
   stairs: new URL("../assets/scene-pack/runtime/lod2/ARCH-011/ARCH-011.glb", import.meta.url).href,
   rockWall: new URL("../assets/scene-pack/runtime/lod2/ENV-001/ENV-001.glb", import.meta.url).href,
   bamboo: new URL("../assets/scene-pack/runtime/lod2/ENV-003/ENV-003.glb", import.meta.url).href,
   pondBank: new URL("../assets/scene-pack/runtime/lod2/ENV-007/ENV-007.glb", import.meta.url).href,
+  lotus: new URL("../assets/scene-pack/runtime/lod2/ENV-010/ENV-010.glb", import.meta.url).href,
   windsweptPine: new URL("../assets/scene-pack/runtime/lod2/ENV-006/ENV-006.glb", import.meta.url).href,
   stoneLantern: new URL("../assets/scene-pack/runtime/lod2/PROP-001/PROP-001.glb", import.meta.url).href,
   pathLantern: new URL("../assets/scene-pack/runtime/lod2/PROP-002/PROP-002.glb", import.meta.url).href,
@@ -22,15 +23,15 @@ const ASSET_URLS = {
   templeBell: new URL("../assets/scene-pack/runtime/lod2/PROP-004/PROP-004.glb", import.meta.url).href,
   ritualDrum: new URL("../assets/scene-pack/runtime/lod2/PROP-005/PROP-005.glb", import.meta.url).href,
   offeringTable: new URL("../assets/scene-pack/runtime/lod2/PROP-006/PROP-006.glb", import.meta.url).href,
-  stoneStele: new URL("../assets/scene-pack/runtime/lod2/PROP-007/PROP-007.glb", import.meta.url).href,
   waterJar: new URL("../assets/scene-pack/runtime/lod2/PROP-008/PROP-008.glb", import.meta.url).href,
   areaSign: new URL("../assets/scene-pack/runtime/lod2/PROP-009/PROP-009.glb", import.meta.url).href,
 };
 
 const wallInstances = [
-  [-11.3, 0, 25.2, 0], [-7.3, 0, 25.2, 0], [7.3, 0, 25.2, 0], [11.3, 0, 25.2, 0],
-  [-15.3, 0, 22.8, Math.PI / 2], [-15.3, 0, 18.8, Math.PI / 2], [-15.3, 0, 14.8, Math.PI / 2], [-15.3, 0, 10.8, Math.PI / 2],
-  [15.3, 0, 22.8, Math.PI / 2], [15.3, 0, 18.8, Math.PI / 2], [15.3, 0, 10.8, Math.PI / 2],
+  [-13.25, 0, 25.2, 0], [-9.25, 0, 25.2, 0], [-5.25, 0, 25.2, 0],
+  [5.25, 0, 25.2, 0], [9.25, 0, 25.2, 0], [13.25, 0, 25.2, 0],
+  [-15.3, 0, 22.8, Math.PI / 2], [-15.3, 0, 18.8, Math.PI / 2], [-15.3, 0, 14.8, Math.PI / 2], [-15.3, 0, 10.8, Math.PI / 2], [-15.3, 0, 6.8, Math.PI / 2],
+  [15.3, 0, 22.8, Math.PI / 2], [15.3, 0, 18.8, Math.PI / 2], [15.3, 0, 10.8, Math.PI / 2], [15.3, 0, 6.8, Math.PI / 2],
 ].map(([x, y, z, rotationY]) => ({ position: [x, y, z], rotationY }));
 
 const wallCornerInstances = [
@@ -134,8 +135,18 @@ const ASSETS = [
     instances: [
       { position: [8.6, -0.04, 11.9], rotationY: 0 },
       { position: [8.6, -0.04, 17.1], rotationY: Math.PI },
-      { position: [5.25, -0.04, 14.5], rotationY: Math.PI / 2 },
       { position: [11.95, -0.04, 14.5], rotationY: -Math.PI / 2 },
+    ],
+  },
+  {
+    id: "ENV-010",
+    label: "池塘莲花",
+    url: ASSET_URLS.lotus,
+    scale: [2.4615, 0.9595, 1.9704],
+    instances: [
+      { position: [5.2, -0.08, 13.4], rotationY: -0.35, scaleMultiplier: 0.88 },
+      { position: [12.2, -0.08, 13.5], rotationY: 0.62, scaleMultiplier: 0.82 },
+      { position: [12.0, -0.08, 15.8], rotationY: -0.95, scaleMultiplier: 0.68 },
     ],
   },
   {
@@ -175,8 +186,8 @@ const ASSETS = [
     id: "PROP-003",
     label: "香炉",
     url: ASSET_URLS.incenseBurner,
-    scale: [3.556, 6.075, 4.661],
-    instances: [{ position: [0, 1.74, -5.8], rotationY: 0 }],
+    scale: [2.5, 4.3, 3.3],
+    instances: [{ position: [0, 0.64, 6.6], rotationY: 0 }],
   },
   {
     id: "PROP-004",
@@ -198,14 +209,6 @@ const ASSETS = [
     url: ASSET_URLS.offeringTable,
     scale: [1.333, 1.077, 1.169],
     instances: [{ position: [0, 0.64, -5.8], rotationY: 0 }],
-  },
-  {
-    id: "PROP-007",
-    label: "原创石碑",
-    url: ASSET_URLS.stoneStele,
-    scale: [2.49, 3.2, 1.773],
-    runtimeText: "云庭 · NODE 07",
-    instances: [{ position: [6.2, 0, 8.4], rotationY: -0.35 }],
   },
   {
     id: "PROP-008",
@@ -262,9 +265,15 @@ function prepareMaterials(model, renderer, materialTint, castShadow) {
     child.receiveShadow = true;
     const materials = Array.isArray(child.material) ? child.material : [child.material];
     materials.filter(Boolean).forEach((meshMaterial) => {
-      meshMaterial.envMapIntensity = 0.74;
+      meshMaterial.envMapIntensity = castShadow ? 0.5 : 0.62;
+      if (castShadow && meshMaterial.color) meshMaterial.color.multiply(new THREE.Color(0xc5bca9));
       if (materialTint && meshMaterial.color) meshMaterial.color.multiply(new THREE.Color(materialTint));
-      if (meshMaterial.map) meshMaterial.map.anisotropy = anisotropy;
+      meshMaterial.roughness = Math.max(meshMaterial.roughness ?? 0, castShadow ? 0.72 : 0.58);
+      meshMaterial.metalness = Math.min(meshMaterial.metalness ?? 0, castShadow ? 0.08 : 0.22);
+      if (meshMaterial.map) {
+        meshMaterial.map.colorSpace = THREE.SRGBColorSpace;
+        meshMaterial.map.anisotropy = anisotropy;
+      }
       meshMaterial.needsUpdate = true;
     });
   });
@@ -342,13 +351,13 @@ function loadAsset(loader, renderer, config) {
 
 function addSliceLights(parent) {
   [
-    [-12, 3.3, 7.8, 0xffc477, 7.5],
-    [-12, 3.5, 18.7, 0xffbd68, 6.5],
-    [8.6, 1.3, 14.5, 0x7cebd0, 5.2],
-    [0, 2.2, 24.2, 0x8be8d2, 4.2],
-    [-3.25, 1.72, 11.4, 0xffc477, 2.2], [3.25, 1.72, 11.4, 0xffc477, 2.2],
-    [-3.25, 1.72, 20.2, 0xffc477, 2.0], [3.25, 1.72, 20.2, 0xffc477, 2.0],
-    [-3.25, 1.72, 24.6, 0x7cebd0, 1.8], [3.25, 1.72, 24.6, 0x7cebd0, 1.8],
+    [-12, 3.3, 7.8, 0xffc477, 5.8],
+    [-12, 3.5, 18.7, 0xffbd68, 5.2],
+    [8.6, 1.3, 14.5, 0x9edbce, 3.8],
+    [0, 2.2, 24.2, 0xa7d8cd, 3.4],
+    [-3.25, 1.72, 11.4, 0xffc477, 1.5], [3.25, 1.72, 11.4, 0xffc477, 1.5],
+    [-3.25, 1.72, 20.2, 0xffc477, 1.35], [3.25, 1.72, 20.2, 0xffc477, 1.35],
+    [-3.25, 1.72, 24.6, 0x7cebd0, 1.1], [3.25, 1.72, 24.6, 0x7cebd0, 1.1],
   ].forEach(([x, y, z, color, intensity]) => {
     const light = new THREE.PointLight(color, intensity, 11, 2);
     light.position.set(x, y, z);

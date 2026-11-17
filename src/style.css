@@ -2,7 +2,7 @@
   color-scheme: dark;
   font-family: "Noto Serif SC", "Songti SC", "STSong", Georgia, serif;
   color: #e9efe9;
-  background: #06110e;
+  background: #102820;
   font-synthesis: none;
   --jade: #73e6bd;
   --jade-soft: rgba(115, 230, 189, 0.18);
@@ -53,11 +53,11 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 .boot .boot__note { margin-top: 24px; color: rgba(232, 239, 234, .42); }
 .boot.is-error .boot__track { background: rgba(236, 129, 109, .2); }
 
-.experience { position: fixed; inset: 0; background: #06110e; }
+.experience { position: fixed; inset: 0; background: #102820; }
 #world { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
 #world:active { cursor: grabbing; }
 .labels, .vignette { position: fixed; inset: 0; pointer-events: none; }
-.vignette { background: radial-gradient(circle at 50% 48%, transparent 40%, rgba(0, 8, 5, .58) 108%), linear-gradient(180deg, rgba(2,10,7,.35), transparent 20%, transparent 78%, rgba(2,10,7,.45)); }
+.vignette { background: radial-gradient(circle at 50% 48%, transparent 48%, rgba(0, 8, 5, .3) 112%), linear-gradient(180deg, rgba(2,10,7,.14), transparent 23%, transparent 80%, rgba(2,10,7,.24)); }
 .world-label { position: absolute; left: 0; top: 0; padding: 3px 7px; border: 1px solid rgba(172, 220, 198, .12); border-radius: 999px; color: rgba(230, 239, 233, .52); background: rgba(3, 14, 10, .48); backdrop-filter: blur(6px); font-family: system-ui, sans-serif; font-size: 9px; white-space: nowrap; will-change: transform; }
 .world-label.is-self { color: #f4dba6; border-color: rgba(230, 189, 114, .35); background: rgba(40, 29, 12, .65); }
 
@@ -88,8 +88,12 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 .identity__orb { width: 28px; height: 28px; border: 1px solid rgba(230,189,114,.4); border-radius: 50%; background: radial-gradient(circle, rgba(230,189,114,.8), rgba(230,189,114,.04) 60%); box-shadow: 0 0 18px rgba(230,189,114,.22); }
 .identity small { display: block; color: rgba(230,238,232,.42); font-size: 9px; }
 .identity strong { display: block; margin-top: 2px; color: #f0d39c; font-size: 12px; font-weight: 400; letter-spacing: .08em; }
-.guide { position: fixed; z-index: 8; top: 102px; right: max(18px, env(safe-area-inset-right)); display: flex; align-items: center; gap: 8px; padding: 10px 13px; border-radius: 15px; color: rgba(230,238,232,.5); font-family: system-ui, sans-serif; font-size: 9px; }
-.guide i { width: 3px; height: 3px; border-radius: 50%; background: var(--jade); }
+.control-panel { position: fixed; z-index: 12; top: 102px; right: max(18px, env(safe-area-inset-right)); display: flex; gap: 3px; padding: 4px; border-radius: 15px; }
+.control-panel button { min-width: 58px; height: 38px; display: grid; place-content: center; gap: 2px; border: 0; border-radius: 11px; color: rgba(230,238,232,.58); background: transparent; cursor: pointer; transition: color .2s, background .2s, box-shadow .2s; }
+.control-panel button:hover, .control-panel button:focus-visible { color: #e6f5ed; outline: none; background: rgba(255,255,255,.045); }
+.control-panel button.is-active { color: var(--jade); background: rgba(115,230,189,.09); box-shadow: inset 0 0 0 1px rgba(115,230,189,.14); }
+.control-panel small { font: 7px/1 ui-monospace, monospace; letter-spacing: .12em; opacity: .58; }
+.control-panel b { font-size: 10px; font-weight: 400; letter-spacing: .08em; }
 
 .scene-nav { position: fixed; z-index: 11; top: 102px; left: 50%; display: flex; gap: 3px; padding: 4px; border-radius: 999px; transform: translateX(-50%); }
 .scene-nav button { min-width: 72px; height: 34px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 999px; color: rgba(231,239,233,.5); background: transparent; cursor: pointer; font-size: 10px; transition: color .25s, background .25s, box-shadow .25s; }
@@ -108,12 +112,13 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 .ritual-dock b { font-size: 10px; font-weight: 400; }
 .leave-seat { position: fixed; z-index: 12; right: 20px; bottom: 30px; padding: 11px 17px; border-radius: 999px; color: rgba(235,242,237,.7); cursor: pointer; }
 
-.arrival { position: fixed; z-index: 40; top: 50%; left: 50%; width: min(430px, calc(100% - 36px)); padding: 32px; border-radius: 26px; text-align: center; transform: translate(-50%, -50%); transition: opacity .5s, transform .5s, filter .5s; }
-.arrival.is-leaving { opacity: 0; filter: blur(8px); transform: translate(-50%, -47%) scale(.96); pointer-events: none; }
-.arrival::before { content: ""; display: block; width: 36px; height: 1px; margin: 0 auto 18px; background: var(--jade); box-shadow: 0 0 16px var(--jade); }
-.arrival > p:first-child { margin: 0 0 8px; color: var(--jade); font: 9px/1 ui-monospace, monospace; letter-spacing: .28em; text-transform: uppercase; }
-.arrival h2 { margin: 0; font-size: 28px; font-weight: 400; letter-spacing: .16em; }
-.arrival h2 + p { margin: 18px auto 24px; max-width: 310px; color: rgba(230,238,232,.58); font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.8; }
+.arrival { position: fixed; z-index: 40; bottom: max(102px, calc(env(safe-area-inset-bottom) + 82px)); left: 50%; width: min(560px, calc(100% - 32px)); display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto; column-gap: 24px; align-items: center; padding: 17px 18px 17px 25px; border-radius: 22px; text-align: left; transform: translateX(-50%); transition: opacity .5s, transform .5s, filter .5s; }
+.arrival.is-leaving { opacity: 0; filter: blur(8px); transform: translate(-50%, 12px) scale(.97); pointer-events: none; }
+.arrival::before { content: ""; position: absolute; top: 18px; bottom: 18px; left: 13px; width: 1px; background: linear-gradient(transparent, var(--jade), transparent); box-shadow: 0 0 12px var(--jade); }
+.arrival > p:first-child { grid-column: 1; margin: 0 0 5px; color: var(--jade); font: 8px/1 ui-monospace, monospace; letter-spacing: .24em; text-transform: uppercase; }
+.arrival h2 { grid-column: 1; margin: 0; font-size: 21px; font-weight: 400; letter-spacing: .14em; }
+.arrival h2 + p { grid-column: 1; margin: 8px 0 0; max-width: 350px; color: rgba(230,238,232,.56); font-family: system-ui, sans-serif; font-size: 10px; line-height: 1.65; }
+.arrival .primary-button { grid-column: 2; grid-row: 1 / 4; min-width: 118px; }
 .primary-button { min-width: 138px; min-height: 44px; padding: 0 22px; border: 1px solid rgba(115,230,189,.38); border-radius: 999px; color: #d9f5e8; background: linear-gradient(135deg, rgba(68,156,124,.35), rgba(28,78,62,.48)); box-shadow: 0 0 24px rgba(115,230,189,.09); cursor: pointer; }
 .primary-button:hover { border-color: rgba(115,230,189,.7); box-shadow: 0 0 30px rgba(115,230,189,.16); }
 
@@ -122,11 +127,18 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 .ritual-dialog h2 { margin: 9px 0 22px; font-size: 24px; font-weight: 400; letter-spacing: .14em; }
 .ritual-dialog > p:last-of-type { color: rgba(231,239,233,.52); font-family: system-ui, sans-serif; font-size: 11px; }
 .dialog-close { position: absolute; top: 15px; right: 16px; width: 34px; height: 34px; border: 0; border-radius: 50%; color: rgba(235,241,237,.55); background: rgba(255,255,255,.045); font-family: system-ui, sans-serif; font-size: 19px; cursor: pointer; }
-.beads-ring { --turn: 0deg; position: relative; width: 210px; height: 210px; margin: 0 auto 20px; border-radius: 50%; background: repeating-conic-gradient(from var(--turn), #d4b26f 0 2.1deg, transparent 2.1deg 3.33deg); filter: drop-shadow(0 0 12px rgba(230,189,114,.23)); cursor: pointer; transition: background .15s; }
-.beads-ring::before { content: ""; position: absolute; inset: 18px; border-radius: inherit; background: #071510; box-shadow: inset 0 0 30px rgba(115,230,189,.08); }
-.beads-center { position: absolute; z-index: 1; inset: 0; display: grid; place-content: center; }
-.beads-center strong { display: block; color: #f0d49d; font-size: 44px; font-weight: 300; }
-.beads-center small { color: rgba(240,212,157,.45); font-family: system-ui, sans-serif; }
+.ritual-dialog--object { width: min(470px, calc(100% - 24px)); padding-bottom: 26px; }
+.ritual-object-stage { position: relative; width: 100%; height: 265px; margin: -5px auto 18px; overflow: hidden; border: 1px solid rgba(199,151,85,.16); border-radius: 22px; background: radial-gradient(circle at 50% 44%, rgba(101,70,39,.24), rgba(7,20,15,.5) 48%, rgba(3,12,9,.92) 82%); box-shadow: inset 0 0 45px rgba(0,0,0,.3), 0 16px 40px rgba(0,0,0,.26); }
+.ritual-object-stage::after { content: "拖动旋转 · 点击操作"; position: absolute; right: 13px; bottom: 10px; color: rgba(226,207,169,.34); font: 8px/1 ui-monospace, monospace; letter-spacing: .12em; pointer-events: none; }
+.ritual-object-stage canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; outline: none; }
+.ritual-object-stage canvas:active { cursor: grabbing; }
+.ritual-object-stage canvas:focus-visible { box-shadow: inset 0 0 0 1px rgba(115,230,189,.5); }
+.ritual-object-loading { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(227,212,177,.52); font: 10px/1 system-ui, sans-serif; letter-spacing: .12em; pointer-events: none; transition: opacity .3s; }
+.ritual-object-stage[data-preview-state="ready"] .ritual-object-loading { opacity: 0; }
+.ritual-object-stage[data-preview-state="error"] .ritual-object-loading::after { content: "模型暂时无法显示"; }
+.ritual-object-count { position: absolute; left: 14px; bottom: 10px; display: flex; align-items: baseline; gap: 5px; padding: 7px 10px; border: 1px solid rgba(218,174,103,.18); border-radius: 999px; color: #f0d49d; background: rgba(4,15,11,.64); backdrop-filter: blur(10px); pointer-events: none; }
+.ritual-object-count strong { font-size: 22px; font-weight: 300; }
+.ritual-object-count small { color: rgba(240,212,157,.48); font-family: system-ui, sans-serif; font-size: 9px; }
 .timer-ring { width: 190px; height: 190px; display: grid; place-content: center; margin: 0 auto 18px; border: 1px solid rgba(115,230,189,.22); border-radius: 50%; background: radial-gradient(circle, rgba(115,230,189,.1), transparent 64%); box-shadow: inset 0 0 40px rgba(115,230,189,.05), 0 0 50px rgba(115,230,189,.06); }
 .timer-ring strong { display: block; font-family: ui-monospace, monospace; font-size: 36px; font-weight: 300; letter-spacing: .05em; }
 .timer-ring small { display: block; margin-top: 8px; color: rgba(230,238,232,.42); font-family: system-ui, sans-serif; font-size: 10px; }
@@ -137,13 +149,21 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 @keyframes pulse { 50% { opacity: .32; box-shadow: 0 0 4px var(--jade); } }
 @keyframes sound { to { height: 14px; } }
 
+@media (min-width: 900px) {
+  .ritual-dialog--object { margin: auto max(28px, 5vw) auto auto; }
+  .ritual-dialog--object::backdrop { background: rgba(0, 8, 5, .28); backdrop-filter: blur(1px); }
+}
+
 @media (max-width: 720px) {
+  .ritual-dialog--object { padding: 24px 18px 22px; }
+  .ritual-object-stage { height: 240px; }
   .topbar { top: max(10px, env(safe-area-inset-top)); width: calc(100% - 20px); height: 58px; padding-left: 12px; }
   .brand small { display: none; }
   .brand b { font-size: 15px; }
   .presence { transform: translateX(-4px); }
   .identity { top: 121px; left: 10px; }
-  .guide { display: none; }
+  .control-panel { top: 121px; right: 10px; }
+  .control-panel button { min-width: 50px; height: 34px; }
   .scene-nav { top: 78px; }
   .scene-nav button { min-width: 62px; height: 31px; font-size: 9px; }
   .notice { top: 168px; }
@@ -152,8 +172,10 @@ button, [role="button"] { -webkit-tap-highlight-color: transparent; }
   .ritual-dock span { width: 23px; height: 23px; }
   .ritual-dock b { font-size: 9px; }
   .leave-seat { right: 10px; bottom: 82px; padding: 8px 13px; font-size: 10px; }
-  .arrival { padding: 28px 22px; }
-  .arrival h2 { font-size: 24px; }
+  .arrival { bottom: max(79px, calc(env(safe-area-inset-bottom) + 68px)); width: calc(100% - 20px); column-gap: 12px; padding: 14px 13px 14px 21px; border-radius: 18px; }
+  .arrival h2 { font-size: 17px; }
+  .arrival h2 + p { max-width: 225px; margin-top: 6px; font-size: 9px; line-height: 1.5; }
+  .arrival .primary-button { min-width: 96px; min-height: 38px; padding: 0 12px; font-size: 11px; }
   .world-label:not(.is-self) { display: none; }
 }
 

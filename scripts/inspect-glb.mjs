@@ -35,6 +35,16 @@ for (const filePath of process.argv.slice(2)) {
     boundsMin: boundsMin.map((value) => Number(value.toFixed(3))),
     boundsMax: boundsMax.map((value) => Number(value.toFixed(3))),
     boundsSize: boundsMax.map((value, axis) => Number((value - boundsMin[axis]).toFixed(3))),
+    skins: json.skins?.length ?? 0,
+    joints: json.skins?.reduce((sum, skin) => sum + (skin.joints?.length ?? 0), 0) ?? 0,
+    skeletonNodes: (json.nodes ?? []).filter((node) => node.name && /hip|spine|neck|head|arm|hand|leg|foot/i.test(node.name)).map((node) => node.name).slice(0, 80),
+    sceneRoots: (json.scenes?.[json.scene ?? 0]?.nodes ?? []).map((nodeIndex) => ({ index: nodeIndex, name: json.nodes?.[nodeIndex]?.name ?? null })),
+    nodeSummary: (json.nodes ?? []).map((node, index) => ({
+      index,
+      name: node.name ?? null,
+      mesh: node.mesh ?? null,
+      children: node.children ?? [],
+    })).slice(0, 80),
     animations: json.animations?.length ?? 0,
   }));
 }
