@@ -34,8 +34,8 @@ page('附录一 山门资产迭代', '完整门楼候选与门楼、院墙的集
     (reviews/'gate-wall-lux3d-complete-1.png', '完整门楼候选：门体与门楼统一，侧墙连接仍需适配。', 14),
     (reviews/'gate-sidewall-integrated-proof.png', '场景集成：门楼与左右院墙衔接，门下台基收窄。', 14)])
 page('附录二 场景效果', '以下为项目留存的运行截图和演示视频关键帧。', [
-    (reviews/'pond-lotus-cleanup-proof.png', '云庭：石桥、池塘及莲花；清理桥边遮挡物后的验收画面。', 7),
-    (reviews/'continuous-walk-hall-proof.png', '连续行走进入大殿后的画面。', 7)])
+    (reviews/'pond-lotus-cleanup-proof.png', '云庭：石桥、池塘及莲花；清理桥边遮挡物后的验收画面。', 5.5),
+    (reviews/'continuous-walk-hall-proof.png', '连续行走进入大殿后的画面。', 5.5)])
 page('附录三 大殿与壁画', '', [
     (video/'final-hall.png', '演示视频关键帧：大殿、角色、香炉与佛像。', 15),
     (root.parent/'assets/scene-pack/textures/hall-mythic-mural-v1.png', '大殿原创壁画贴图；单独展示原始图像。', 15)])
@@ -43,9 +43,9 @@ page('附录四 仪式交互', '以下为演示视频中的静态关键帧，动
     (video/'qa-050.png', '合掌：角色与大殿场景。', 13.5),
     (video/'qa-057.png', '礼拜：角色前倾动作。', 13.5)])
 page('仪式交互 道具与静坐', '', [
-    (video/'qa-084.png', '念珠：三维道具预览与计数。', 12.5),
-    (video/'qa-101.png', '木鱼：三维道具预览与敲击入口。', 12.5),
-    (video/'qa-113.png', '静坐计时界面。', 12.5)])
+    (video/'qa-070.png', '念珠：三维道具预览与计数。', 12.5),
+    (video/'qa-084.png', '木鱼：三维道具预览与敲击入口。', 12.5),
+    (video/'qa-101.png', '静坐计时界面。', 12.5)])
 
 groups = [
  ('附录五 角色与核心资产', [('01-char-001-final.png','CHAR-001 小和尚：绑骨模型，以 T-Pose 展示。'),('02-prop-011-buddha.png','PROP-011 黄铜佛像：大殿主视觉资产。')]),
