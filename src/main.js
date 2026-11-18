@@ -1,4 +1,4 @@
-import { TempleScene } from "./scene.js?v=forecourt-moon-fill-1";
+import { TempleScene } from "./scene.js?v=gate-composition-11";
 import { TempleAudio } from "./audio.js?v=gate-sidewall-integrated-1";
 import { PresenceRoom } from "./presence.js?v=atmosphere-hall-1";
 import { RitualObjectPreview } from "./ritual-preview.js?v=atmosphere-hall-1";

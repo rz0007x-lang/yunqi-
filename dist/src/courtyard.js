@@ -279,6 +279,37 @@ function prepareMaterials(model, renderer, materialTint, castShadow) {
   });
 }
 
+function addInstanceExtras(group, model, config, instance, index) {
+  if (config.runtimeText && index === 0) {
+    const bounds = new THREE.Box3().setFromObject(model);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const panel = createRuntimeText(config.runtimeText);
+    const front = new THREE.Vector3(0, 0, 0.27).applyAxisAngle(new THREE.Vector3(0, 1, 0), model.rotation.y);
+    panel.position.set(center.x, bounds.min.y + 1.3, center.z).add(front);
+    panel.rotation.y = model.rotation.y;
+    group.add(panel);
+  }
+  if (config.waterSurface) {
+    const bounds = new THREE.Box3().setFromObject(model);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const water = new THREE.Mesh(
+      new THREE.CircleGeometry(0.39 * (instance.scaleMultiplier ?? 1), 32),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x173f3b,
+        emissive: 0x0b2b28,
+        emissiveIntensity: 0.35,
+        roughness: 0.12,
+        clearcoat: 1,
+        transparent: true,
+        opacity: 0.82,
+      }),
+    );
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(center.x, bounds.max.y - 0.11, center.z);
+    group.add(water);
+  }
+}
+
 function placeInstance(model, config, assetId, index) {
   model.name = `${assetId.toLowerCase()}-${index + 1}`;
   model.userData.assetId = assetId;
@@ -303,41 +334,56 @@ function loadAsset(loader, renderer, config) {
       config.url,
       (gltf) => {
         const template = gltf.scene;
-        prepareMaterials(template, renderer, config.materialTint, config.id.startsWith("ARCH-"));
+        // The temple and gate already provide the hero shadows. Letting every
+        // repeated courtyard building cast into the 2K moon map roughly doubles
+        // the geometry cost during the walk through the gate.
+        prepareMaterials(template, renderer, config.materialTint, false);
         const group = new THREE.Group();
         group.name = `${config.id.toLowerCase()}-instances`;
-        config.instances.forEach((instance, index) => {
+        group.userData.assetId = config.id;
+        const models = config.instances.map((instance, index) => {
           const model = index === 0 ? template : template.clone(true);
-          group.add(placeInstance(model, { ...config, instance }, config.id, index));
-          if (config.runtimeText && index === 0) {
-            const bounds = new THREE.Box3().setFromObject(model);
-            const center = bounds.getCenter(new THREE.Vector3());
-            const panel = createRuntimeText(config.runtimeText);
-            const front = new THREE.Vector3(0, 0, 0.27).applyAxisAngle(new THREE.Vector3(0, 1, 0), model.rotation.y);
-            panel.position.set(center.x, bounds.min.y + 1.3, center.z).add(front);
-            panel.rotation.y = model.rotation.y;
-            group.add(panel);
-          }
-          if (config.waterSurface) {
-            const bounds = new THREE.Box3().setFromObject(model);
-            const center = bounds.getCenter(new THREE.Vector3());
-            const water = new THREE.Mesh(
-              new THREE.CircleGeometry(0.39 * (instance.scaleMultiplier ?? 1), 32),
-              new THREE.MeshPhysicalMaterial({
-                color: 0x173f3b,
-                emissive: 0x0b2b28,
-                emissiveIntensity: 0.35,
-                roughness: 0.12,
-                clearcoat: 1,
-                transparent: true,
-                opacity: 0.82,
-              }),
-            );
-            water.rotation.x = -Math.PI / 2;
-            water.position.set(center.x, bounds.max.y - 0.11, center.z);
-            group.add(water);
-          }
+          return placeInstance(model, { ...config, instance }, config.id, index);
         });
+
+        const meshCounts = models.map((model) => {
+          let count = 0;
+          model.traverse((child) => { if (child.isMesh) count += 1; });
+          return count;
+        });
+        const positions = config.instances.map((instance) => instance.position);
+        const spread = Math.max(
+          Math.max(...positions.map((position) => position[0])) - Math.min(...positions.map((position) => position[0])),
+          Math.max(...positions.map((position) => position[2])) - Math.min(...positions.map((position) => position[2])),
+        );
+        const canInstance = models.length > 1
+          && meshCounts.every((count) => count === 1)
+          && spread <= 10
+          && !["ENV-003", "ENV-006"].includes(config.id);
+
+        if (canInstance) {
+          const sourceMesh = models[0].getObjectByProperty("isMesh", true);
+          const instanced = new THREE.InstancedMesh(sourceMesh.geometry, sourceMesh.material, models.length);
+          instanced.name = `${config.id.toLowerCase()}-batch`;
+          instanced.userData.assetId = config.id;
+          instanced.castShadow = false;
+          instanced.receiveShadow = true;
+          models.forEach((model, index) => {
+            const mesh = model.getObjectByProperty("isMesh", true);
+            mesh.updateMatrixWorld(true);
+            instanced.setMatrixAt(index, mesh.matrixWorld);
+            addInstanceExtras(group, model, config, config.instances[index], index);
+          });
+          instanced.instanceMatrix.needsUpdate = true;
+          instanced.computeBoundingBox();
+          instanced.computeBoundingSphere();
+          group.add(instanced);
+        } else {
+          models.forEach((model, index) => {
+            group.add(model);
+            addInstanceExtras(group, model, config, config.instances[index], index);
+          });
+        }
         resolve({ id: config.id, group });
       },
       undefined,
@@ -371,13 +417,22 @@ export async function loadCourtyardSlice({ parent, renderer, onStatus }) {
   let loaded = 0;
   onStatus?.({ state: "loading", loaded, total });
 
-  const results = await Promise.all(ASSETS.map(async (config) => {
-    const result = await loadAsset(loader, renderer, config);
-    loaded += 1;
-    onStatus?.({ state: "loading", loaded, total, assetId: config.id, label: config.label });
-    if (result.group) parent.add(result.group);
-    return result;
-  }));
+  const results = [];
+  const batchSize = 3;
+  for (let start = 0; start < ASSETS.length; start += batchSize) {
+    const batch = ASSETS.slice(start, start + batchSize);
+    const batchResults = await Promise.all(batch.map(async (config) => {
+      const result = await loadAsset(loader, renderer, config);
+      loaded += 1;
+      onStatus?.({ state: "loading", loaded, total, assetId: config.id, label: config.label });
+      if (result.group) parent.add(result.group);
+      return result;
+    }));
+    results.push(...batchResults);
+    // Yield between decode/upload batches so the boot animation and WebGL
+    // context can keep presenting frames instead of flashing a stale surface.
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+  }
 
   addSliceLights(parent);
   const failed = results.filter((result) => !result.group).map((result) => result.id);

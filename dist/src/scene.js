@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { clone as cloneSkeleton } from "three/addons/utils/SkeletonUtils.js";
-import { loadCourtyardSlice } from "./courtyard.js?v=gate-sidewall-integrated-1";
+import { loadCourtyardSlice } from "./courtyard.js?v=gate-composition-11";
 
 const TEMPLE_MODEL_URL = new URL("../assets/lux3d/main-hall-turbo/main-hall-turbo.glb", import.meta.url).href;
 const GATE_MODEL_URL = new URL("../assets/scene-pack/runtime/lod1/ARCH-016/ARCH-016.glb?v=sidewall-integrated-1", import.meta.url).href;
@@ -1065,8 +1065,9 @@ export class TempleScene {
     this.camera.lookAt(this.cameraTarget);
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", alpha: false });
-    const lowPowerDevice = window.innerWidth < 720 || (navigator.deviceMemory && navigator.deviceMemory <= 4);
-    this.pixelRatioCap = lowPowerDevice ? 1.25 : 1.75;
+    this.lowPowerDevice = window.innerWidth < 720 || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    this.basePixelRatioCap = this.lowPowerDevice ? 1.15 : 1.5;
+    this.pixelRatioCap = this.basePixelRatioCap;
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, this.pixelRatioCap));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1096,11 +1097,19 @@ export class TempleScene {
     this.frameTimes = [];
     this.frameCounter = 0;
     this.qualityAdjustments = 0;
+    this.longFrameCount = 0;
+    this.peakFrameMs = 0;
+    this.interactiveReady = false;
+    this.courtyardReady = false;
+    this.courtyardLoadMs = 0;
+    this.courtyardDetailTier = -1;
     this.view = "gate";
     this.gateDoorCurrent = 0;
     this.gateDoorTarget = 0;
     this.gateCameraHold = null;
     this.entryJourney = null;
+    this.entryPerformanceMode = false;
+    this.entryRevealStartedAt = null;
     this.entryCameraCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0, 3.55, 43),
       new THREE.Vector3(0, 3.2, 35),
@@ -1151,7 +1160,28 @@ export class TempleScene {
     this.#buildSeats();
     this.#seedBots();
     const characterReady = this.#loadMonkTemplate();
-    this.ready = Promise.all([templeReady, characterReady, gateLanternReady]);
+    const courtyardLoadStartedAt = performance.now();
+    const courtyardReady = this.#ensureCourtyardSlice().then((result) => {
+      this.courtyardReady = true;
+      this.courtyardLoadMs = performance.now() - courtyardLoadStartedAt;
+      return result;
+    });
+    this.ready = Promise.all([templeReady, characterReady, gateLanternReady, courtyardReady]).then((results) => {
+      // All expensive mesh decoding and first-use shader compilation happens
+      // behind the boot screen. Freeze the static moon shadow afterwards so
+      // the full temple is not rendered into a shadow map on every frame.
+      this.renderer.shadowMap.autoUpdate = false;
+      this.renderer.shadowMap.needsUpdate = true;
+      this.interactiveReady = true;
+      this.frameTimes.length = 0;
+      this.longFrameCount = 0;
+      this.peakFrameMs = 0;
+      this.lastRenderAt = performance.now();
+      this.pixelRatioCap = this.basePixelRatioCap;
+      this.resize();
+      this.#updateCourtyardDetail(true);
+      return results;
+    });
     this.#bindEvents();
     this.resize();
     this.animate();
@@ -1247,13 +1277,17 @@ export class TempleScene {
   }
 
   cycleCameraMode() {
-    const presets = { first: { distance: 0.72, pitch: 0.08 }, third: { distance: 5.2, pitch: 0.34 }, overview: { distance: 10.5, pitch: 0.62 } };
+    const presets = {
+      first: { distance: 0.72, pitch: 0.08, orbitZoom: 0.72 },
+      third: { distance: 5.2, pitch: 0.34, orbitZoom: 0.92 },
+      overview: { distance: 10.5, pitch: 0.62, orbitZoom: 1.06 },
+    };
     const order = ["first", "third", "overview"];
     const current = this.getControlState().cameraMode;
     const next = order[(order.indexOf(current) + 1) % order.length];
     this.cameraDistanceTarget = presets[next].distance;
     this.cameraPitchTarget = presets[next].pitch;
-    this.controlMode = "follow";
+    this.orbitZoomTarget = presets[next].orbitZoom;
     this.#emitControlState();
     return this.getControlState();
   }
@@ -1270,6 +1304,10 @@ export class TempleScene {
     this.entryJourney = !continuous && previousView === "gate" && view === "courtyard"
       ? { startedAt: this.clock.getElapsedTime(), duration: 6.4 }
       : null;
+    if (this.entryJourney) {
+      this.entryPerformanceMode = true;
+      this.entryRevealStartedAt = null;
+    }
     this.hallJourney = !continuous && previousView === "courtyard" && view === "hall"
       ? { startedAt: this.clock.getElapsedTime(), duration: 5.4 }
       : null;
@@ -1278,7 +1316,12 @@ export class TempleScene {
       : null;
     if (!continuous) this.cameraYaw = 0;
     if (this.walkMarker) this.walkMarker.visible = false;
-    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.enabled = view === "hall";
+    if (this.entryJourney) {
+      this.pixelRatioCap = Math.min(this.pixelRatioCap, this.lowPowerDevice ? 1 : 1.25);
+      this.resize();
+    }
+    if (this.interactiveReady && this.renderer.shadowMap.enabled) this.renderer.shadowMap.needsUpdate = true;
     const atmosphere = {
       gate: { background: 0x071018, fog: 0x183039, density: 0.0138, exposure: 1.24, moon: 3.35, warm: 0.5, hemi: 0.9, gateFill: 18, forecourtMoon: 4.8, incenseBounce: 0.8 },
       courtyard: { background: 0x060d16, fog: 0x18313a, density: 0.0118, exposure: 1.22, moon: 3.05, warm: 0.72, hemi: 0.86, gateFill: 6, forecourtMoon: 13.5, incenseBounce: 3.6 },
@@ -1292,10 +1335,11 @@ export class TempleScene {
     if (!continuous) this.#updateAtmosphere(true);
     if (view === "gate" || view === "courtyard") this.#ensureCourtyardSlice();
     this.#applyViewVisibility();
+    this.#updateCourtyardDetail(true);
     for (const monk of this.characters.values()) {
       monk.visible = monk === this.self || view === "hall";
       monk.traverse((child) => {
-        if (child.isMesh) child.castShadow = view === "hall";
+        if (child.isMesh) child.castShadow = false;
       });
     }
     if (!continuous && this.self && this.self.userData.targetSeat == null) {
@@ -1335,6 +1379,12 @@ export class TempleScene {
       renderer: this.renderer,
       onStatus: this.onCourtyardStatus,
     }).then((result) => {
+      if (!result.failed.includes("ENV-003")) {
+        const proceduralCourtyard = this.scene.getObjectByName("cloud-courtyard");
+        proceduralCourtyard?.children.forEach((child) => {
+          if (child.name.startsWith("procedural-bamboo-")) child.visible = false;
+        });
+      }
       this.#applyViewVisibility();
       return result;
     });
@@ -1356,11 +1406,46 @@ export class TempleScene {
     for (const child of this.courtyardSlice.children) {
       if (child.name === "prop-006-instances") {
         child.visible = false;
-        continue;
       }
-      child.visible = true;
     }
     this.#refreshSeats();
+  }
+
+  #updateCourtyardDetail(force = false) {
+    const playerZ = this.self?.position.z ?? (this.view === "gate" ? 32.2 : 14.6);
+    const hallMode = !this.entryPerformanceMode && this.view === "hall";
+    let tier = 3;
+    if (this.entryPerformanceMode) {
+      if (this.self?.userData.walking) {
+        tier = playerZ > 29.5 ? 0 : 1;
+      } else {
+        if (this.entryRevealStartedAt == null) this.entryRevealStartedAt = this.clock.getElapsedTime();
+        const revealElapsed = this.clock.getElapsedTime() - this.entryRevealStartedAt;
+        tier = revealElapsed < 0.65 ? 1 : revealElapsed < 1.45 ? 2 : 3;
+        if (tier === 3) this.entryPerformanceMode = false;
+      }
+    } else if (hallMode) tier = 0;
+    if (!force && tier === this.courtyardDetailTier) return;
+
+    const heavyAssets = new Set(["ENV-001", "ENV-003", "ENV-006", "ENV-007", "ENV-010", "ARCH-009", "ARCH-010"]);
+    const entryAssets = new Set(["PROP-001", "PROP-002", "PROP-003"]);
+    const gatewayAssets = new Set([
+      ...entryAssets,
+      "ARCH-003", "ARCH-006", "ARCH-007", "ARCH-008",
+      "ENV-001", "ENV-003", "ENV-006",
+    ]);
+    const crossingAssets = new Set([...gatewayAssets, "ARCH-011", "PROP-004", "PROP-005", "PROP-008", "PROP-009"]);
+    for (const child of this.courtyardSlice.children) {
+      const assetId = child.userData.assetId;
+      if (assetId === "PROP-006") child.visible = false;
+      else if (!assetId) child.visible = true;
+      else if (hallMode) child.visible = entryAssets.has(assetId);
+      else if (tier === 0) child.visible = gatewayAssets.has(assetId);
+      else if (tier === 1) child.visible = crossingAssets.has(assetId);
+      else if (tier === 2) child.visible = !heavyAssets.has(assetId);
+      else child.visible = true;
+    }
+    this.courtyardDetailTier = tier;
   }
 
   leaveSeat() {
@@ -1408,11 +1493,18 @@ export class TempleScene {
       p95FrameMs: samples.length ? Number(samples[Math.floor((samples.length - 1) * 0.95)].toFixed(2)) : 0,
       pixelRatio: Number(this.renderer.getPixelRatio().toFixed(2)),
       qualityAdjustments: this.qualityAdjustments,
+      longFrameCount: this.longFrameCount,
+      peakFrameMs: Number(this.peakFrameMs.toFixed(2)),
       drawCalls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
       geometries: this.renderer.info.memory.geometries,
       textures: this.renderer.info.memory.textures,
       courtyardAssets: this.courtyardSlice.children.length,
+      courtyardReady: this.courtyardReady,
+      courtyardLoadMs: Number(this.courtyardLoadMs.toFixed(0)),
+      courtyardDetailTier: this.courtyardDetailTier,
+      entryPerformanceMode: this.entryPerformanceMode,
+      staticShadows: !this.renderer.shadowMap.autoUpdate,
       roofOverlay: Boolean(this.roofModel),
       gateDoors: Boolean(this.gateDoorLeaves?.length === 2),
       gateDoorOpen: Number(this.gateDoorCurrent.toFixed(2)),
@@ -1450,7 +1542,7 @@ export class TempleScene {
     const moon = new THREE.DirectionalLight(0xb8d2f2, 2.95);
     moon.position.set(-18, 24, -14);
     moon.castShadow = true;
-    moon.shadow.mapSize.set(2048, 2048);
+    moon.shadow.mapSize.set(this.lowPowerDevice ? 768 : 1024, this.lowPowerDevice ? 768 : 1024);
     moon.shadow.camera.left = -24;
     moon.shadow.camera.right = 24;
     moon.shadow.camera.top = 28;
@@ -1726,8 +1818,9 @@ export class TempleScene {
       }
     });
 
-    [[-7.6, 28, 0.95], [13, 26.8, 1.02]].forEach(([x, z, scale]) => {
+    [[-7.6, 28, 0.95], [13, 26.8, 1.02]].forEach(([x, z, scale], index) => {
       const bamboo = createBambooCluster(scale);
+      bamboo.name = `procedural-bamboo-${index + 1}`;
       bamboo.position.set(x, 0, z);
       bamboo.rotation.y = x * 0.17;
       courtyard.add(bamboo);
@@ -2056,7 +2149,6 @@ export class TempleScene {
               meshMaterial.needsUpdate = true;
             });
           });
-
           this.scene.add(model);
           this.templeModel = model;
           fallback.visible = false;
@@ -2140,6 +2232,9 @@ export class TempleScene {
               meshMaterial.needsUpdate = true;
             });
           });
+          gateDoorLeaves.forEach((leaf) => leaf.traverse((child) => {
+            if (child.isMesh) child.castShadow = false;
+          }));
 
           this.scene.add(model);
           this.gateModel = model;
@@ -2515,7 +2610,7 @@ export class TempleScene {
         else if (this.cameraDistanceTarget > 7.2) this.cameraPitchTarget = Math.max(this.cameraPitchTarget, 0.52);
         else this.cameraPitchTarget = THREE.MathUtils.clamp(this.cameraPitchTarget, 0.18, 0.56);
       } else {
-        const maximumZoom = this.view === "courtyard" ? 1.1 : 1.45;
+        const maximumZoom = this.view === "gate" ? 1.08 : this.view === "courtyard" ? 1.1 : 1.45;
         this.orbitZoomTarget = THREE.MathUtils.clamp(this.orbitZoomTarget + event.deltaY * 0.0008, 0.68, maximumZoom);
       }
       this.#emitControlState();
@@ -2657,6 +2752,7 @@ export class TempleScene {
 
   #syncContinuousZone() {
     if (!this.self || !this.self.userData.walking) return;
+    if (this.entryJourney || this.hallJourney) return;
     const z = this.self.position.z;
     let nextView = this.view;
     if (this.view === "gate" && z < 27.8) nextView = "courtyard";
@@ -2667,6 +2763,19 @@ export class TempleScene {
   }
 
   #walkingGroundHeight(z, destinationY, currentY) {
+    const pathY = 0.16;
+    const gatePlatformY = 0.76;
+    const gateOuterRamp = [27.2, 28.4];
+    const gateInnerRamp = [22, 23.2];
+    if (z >= gateOuterRamp[0] && z <= gateOuterRamp[1]) {
+      const progress = THREE.MathUtils.smoothstep(z, gateOuterRamp[0], gateOuterRamp[1]);
+      return THREE.MathUtils.lerp(gatePlatformY, pathY, progress);
+    }
+    if (z > gateInnerRamp[1] && z < gateOuterRamp[0]) return gatePlatformY;
+    if (z >= gateInnerRamp[0] && z <= gateInnerRamp[1]) {
+      const progress = THREE.MathUtils.smoothstep(z, gateInnerRamp[0], gateInnerRamp[1]);
+      return THREE.MathUtils.lerp(pathY, gatePlatformY, progress);
+    }
     if (destinationY < 0.5 && currentY < 0.5) return destinationY;
     if (z <= 8.25) return 0.68;
     if (z >= 9.35) return 0.16;
@@ -2674,7 +2783,7 @@ export class TempleScene {
   }
 
   #updateMovement(time) {
-    const delta = Math.min(0.05, Math.max(0, time - this.lastFrameTime));
+    const delta = Math.min(0.1, Math.max(0, time - this.lastFrameTime));
     this.lastFrameTime = time;
     const monk = this.self;
     const target = monk?.userData.walkTarget;
@@ -2685,7 +2794,7 @@ export class TempleScene {
     if (distance < 0.04) {
       monk.position.x = target.x;
       monk.position.z = target.z;
-      monk.userData.baseY = target.y;
+      monk.userData.baseY = this.#walkingGroundHeight(target.z, target.y, monk.userData.baseY);
       const nextTarget = monk.userData.walkQueue?.shift();
       if (nextTarget) {
         monk.userData.walkTarget = nextTarget;
@@ -2715,13 +2824,17 @@ export class TempleScene {
     const renderedAt = performance.now();
     const frameMs = renderedAt - this.lastRenderAt;
     this.lastRenderAt = renderedAt;
-    if (frameMs < 250) {
-      this.frameTimes.push(frameMs);
+    if (!document.hidden && frameMs < 1000) {
+      const sampledFrameMs = Math.min(frameMs, 250);
+      this.frameTimes.push(sampledFrameMs);
       if (this.frameTimes.length > 180) this.frameTimes.shift();
+      this.peakFrameMs = Math.max(this.peakFrameMs, sampledFrameMs);
+      if (frameMs > 50) this.longFrameCount += 1;
     }
     const time = this.clock.getElapsedTime();
     this.#updateCamera(time);
     this.#updateMovement(time);
+    this.#updateCourtyardDetail();
     this.#updateAtmosphere();
     if (this.core.visible) {
       this.core.rotation.y = time * 0.18;
@@ -2814,8 +2927,8 @@ export class TempleScene {
     });
 
     for (const [id, monk] of this.characters) {
-      monk.userData.update?.(time);
-      if (id.startsWith("bot-") && Math.floor(time + Number(id.slice(4)) * 7) % 31 === 0 && !monk.userData.action) {
+      if (monk.visible || monk === this.self) monk.userData.update?.(time);
+      if (monk.visible && id.startsWith("bot-") && Math.floor(time + Number(id.slice(4)) * 7) % 31 === 0 && !monk.userData.action) {
         monk.userData.perform(Number(id.slice(4)) % 2 ? "gassho" : "bow");
       }
     }
@@ -2824,10 +2937,14 @@ export class TempleScene {
     this.#updateLabels();
     this.renderer.render(this.scene, this.camera);
 
-    if (this.frameTimes.length >= 30 && this.frameCounter % 30 === 0) {
-      document.documentElement.dataset.yunqiDiagnostics = JSON.stringify(this.getDiagnostics());
+    if (this.interactiveReady && this.frameTimes.length >= 30 && this.frameCounter % 60 === 0) {
+      if (this.frameCounter % 120 === 0) {
+        document.documentElement.dataset.yunqiDiagnostics = JSON.stringify(this.getDiagnostics());
+      }
       const average = this.frameTimes.reduce((sum, value) => sum + value, 0) / this.frameTimes.length;
-      if (average > 28 && this.renderer.getPixelRatio() > 1) {
+      const ordered = [...this.frameTimes].sort((a, b) => a - b);
+      const p95 = ordered[Math.floor((ordered.length - 1) * 0.95)];
+      if ((average > 24 || p95 > 42) && this.renderer.getPixelRatio() > 1) {
         this.pixelRatioCap = Math.max(1, this.renderer.getPixelRatio() - 0.2);
         this.qualityAdjustments += 1;
         this.resize();
